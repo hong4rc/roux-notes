@@ -1,0 +1,772 @@
+[
+ {
+  "caseId": "o-adjacent-swap",
+  "alg": "R U R' F' R U R' U' R' F R2 U' R'",
+  "votes": 31,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/O_Adjacent",
+  "finger": "R U(I2) R' F'(i1) R U(I2) R' U' R' F(I2) R2 U' R'"
+ },
+ {
+  "caseId": "o-adjacent-swap",
+  "alg": "R U R' U' R' F R2 U' R' U' R U R' F'",
+  "votes": 18,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/O_Adjacent"
+ },
+ {
+  "caseId": "o-adjacent-swap",
+  "alg": "r U R' F' R U R' U' R' F R2 U' r'",
+  "votes": 8,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/O_Adjacent"
+ },
+ {
+  "caseId": "o-diagonal-swap",
+  "alg": "F R U' R' U' R U R' F' R U R' U' R' F R F'",
+  "votes": 21,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/O_Diagonal"
+ },
+ {
+  "caseId": "o-diagonal-swap",
+  "alg": "R U' R2 F R F' R U' B U2 B' R'",
+  "votes": 13,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/O_Diagonal"
+ },
+ {
+  "caseId": "o-diagonal-swap",
+  "alg": "F R' F R2 U' R' U' R U R' F' R U R' U' F'",
+  "votes": 9,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/O_Diagonal"
+ },
+ {
+  "caseId": "h-columns",
+  "alg": "R U R' U R U' R' U R U2 R'",
+  "votes": 25,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/H_Columns"
+ },
+ {
+  "caseId": "h-columns",
+  "alg": "R U2 R' U' R U R' U' R U' R'",
+  "votes": 12,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/H_Columns"
+ },
+ {
+  "caseId": "h-columns",
+  "alg": "r U' r' U' r U r' U r U r'",
+  "votes": 4,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/H_Columns"
+ },
+ {
+  "caseId": "h-rows",
+  "alg": "F R U R' U' R U R' U' R U R' U' F'",
+  "votes": 22,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/H_Rows"
+ },
+ {
+  "caseId": "h-rows",
+  "alg": "F U R U' R' U R U' R' U R U' R' F'",
+  "votes": 16,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/H_Rows",
+  "finger": "F(T2) U R U' R' U R U' R' U R U' R' F'(T3)"
+ },
+ {
+  "caseId": "h-rows",
+  "alg": "F U' R2 D R' U2 R D' R2 U F'",
+  "votes": 5,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/H_Rows"
+ },
+ {
+  "caseId": "h-column",
+  "alg": "R' F2 D R2 U R2 D' F2 R",
+  "votes": 13,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/H_Column",
+  "finger": "R' F2 D R2 U(i1) R2 D'(r4) F2 R"
+ },
+ {
+  "caseId": "h-column",
+  "alg": "R U2 R2 F R F' U2 R' F R F'",
+  "votes": 12,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/H_Column"
+ },
+ {
+  "caseId": "h-column",
+  "alg": "F R U R' U' R U' R' U R U R' F'",
+  "votes": 9,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/H_Column"
+ },
+ {
+  "caseId": "h-row",
+  "alg": "r U' r2 D' r U' r' D r2 U r'",
+  "votes": 20,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/H_Row",
+  "finger": "r U' r2 D'(r4) r U' r' D r2 U(I2) r'"
+ },
+ {
+  "caseId": "h-row",
+  "alg": "R U R' U R U r' F R' F' r",
+  "votes": 7,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/H_Row"
+ },
+ {
+  "caseId": "h-row",
+  "alg": "R U R' U R U L' U R' U' L",
+  "votes": 4,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/H_Row"
+ },
+ {
+  "caseId": "pi-right-bar",
+  "alg": "F R U R' U' R U R' U' F'",
+  "votes": 13,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Pi_Right_Bar"
+ },
+ {
+  "caseId": "pi-right-bar",
+  "alg": "r' U r2 U' r2 U' r2 U r'",
+  "votes": 6,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Pi_Right_Bar",
+  "finger": "r' U(i1) r2 U'(i1) r2 U'(m1) r2 U(i4) r'"
+ },
+ {
+  "caseId": "pi-right-bar",
+  "alg": "F U R U' R' U R U' R' F'",
+  "votes": 5,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Pi_Right_Bar"
+ },
+ {
+  "caseId": "pi-back-slash",
+  "alg": "F R' F' R U2 R U' R' U R U2 R'",
+  "votes": 13,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Pi_Down_Slash"
+ },
+ {
+  "caseId": "pi-back-slash",
+  "alg": "F U R U' R2 F' R U2 R U2 R'",
+  "votes": 5,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Pi_Down_Slash",
+  "finger": "F(T2) U R U'(i1) R2 F'(i1) R U2(I2,M2) R U2(i1,m1) R'"
+ },
+ {
+  "caseId": "pi-back-slash",
+  "alg": "M F R' F' r U2 R U' R' U R U2 R'",
+  "votes": 2,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Pi_Down_Slash"
+ },
+ {
+  "caseId": "pi-x-checkerboard",
+  "alg": "R' F2 D R2 U' R2 D' F2 R",
+  "votes": 18,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Pi_X",
+  "finger": "R' F2 D R2 U' R2 D'(r4) F2 R"
+ },
+ {
+  "caseId": "pi-x-checkerboard",
+  "alg": "R' F R U F U' R U R' U' F'",
+  "votes": 9,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Pi_X"
+ },
+ {
+  "caseId": "pi-x-checkerboard",
+  "alg": "r' F2 D R2 U' R2 D' F2 r",
+  "votes": 2,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Pi_X"
+ },
+ {
+  "caseId": "pi-forward-slash",
+  "alg": "R U2 R' U' R U R' U2 R' F R F'",
+  "votes": 16,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Pi_Up_Slash"
+ },
+ {
+  "caseId": "pi-forward-slash",
+  "alg": "R U2 R' U2 R' F R2 U R' U' F'",
+  "votes": 4,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Pi_Up_Slash",
+  "finger": "R U2(i1,m1) R' U2(i1,m1) R' F(I2) R2 U(I2) R' U' F'(T3)"
+ },
+ {
+  "caseId": "pi-forward-slash",
+  "alg": "R U2 R' U' R U R' U2 r' F R F' M'",
+  "votes": 2,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Pi_Up_Slash"
+ },
+ {
+  "caseId": "pi-columns",
+  "alg": "r U' r2 D' r U r' D r2 U r'",
+  "votes": 17,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Pi_Columns",
+  "finger": "r U' r2 D'(r4) r U r' D r2 U(I2) r'"
+ },
+ {
+  "caseId": "pi-columns",
+  "alg": "R' F R F' r U' r' U' R U' R'",
+  "votes": 5,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Pi_Columns"
+ },
+ {
+  "caseId": "pi-columns",
+  "alg": "R' F R F' r U' R' U' R U' r'",
+  "votes": 5,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Pi_Columns"
+ },
+ {
+  "caseId": "pi-left-bar",
+  "alg": "R' U' R' F R F' R U' R' U2 R",
+  "votes": 15,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Pi_Left_Bar"
+ },
+ {
+  "caseId": "pi-left-bar",
+  "alg": "R' F' U' F U' R U R' U R",
+  "votes": 6,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Pi_Left_Bar",
+  "finger": "R' F'(I2) U'(i1) F(I2) U'(m1) R U(i4) R' U(i1) R"
+ },
+ {
+  "caseId": "pi-left-bar",
+  "alg": "R U R' U R U' B U' B' R'",
+  "votes": 4,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Pi_Left_Bar"
+ },
+ {
+  "caseId": "u-forward-slash",
+  "alg": "R2 D R' U2 R D' R' U2 R'",
+  "votes": 15,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/U_Up_Slash"
+ },
+ {
+  "caseId": "u-forward-slash",
+  "alg": "R r D r' U2 r D' r' U2 R'",
+  "votes": 2,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/U_Up_Slash"
+ },
+ {
+  "caseId": "u-forward-slash",
+  "alg": "F R' F' U2 R U R U' R' U R' U R",
+  "votes": 1,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/U_Up_Slash"
+ },
+ {
+  "caseId": "u-back-slash",
+  "alg": "R2 D' R U2 R' D R U2 R",
+  "votes": 10,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/U_Down_Slash"
+ },
+ {
+  "caseId": "u-back-slash",
+  "alg": "R' F R U R' F R U F U2 F'",
+  "votes": 2,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/U_Down_Slash"
+ },
+ {
+  "caseId": "u-back-slash",
+  "alg": "L2 D' L U2 L' D L U2 L",
+  "votes": 1,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/U_Down_Slash"
+ },
+ {
+  "caseId": "u-front-row",
+  "alg": "R' U' R U' R' U2 R2 U R' U R U2 R'",
+  "votes": 11,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/U_Bottom_Row"
+ },
+ {
+  "caseId": "u-front-row",
+  "alg": "R2 F2 r U r' F R2 U2 r' U' r",
+  "votes": 8,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/U_Bottom_Row"
+ },
+ {
+  "caseId": "u-front-row",
+  "alg": "R2 F U' F U F2 R2 U' R' F R",
+  "votes": 7,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/U_Bottom_Row"
+ },
+ {
+  "caseId": "u-rows",
+  "alg": "F R2 D R' U R D' R2 U' F'",
+  "votes": 18,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/U_Rows"
+ },
+ {
+  "caseId": "u-rows",
+  "alg": "F U R2 D R' U' R D' R2 F'",
+  "votes": 4,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/U_Rows"
+ },
+ {
+  "caseId": "u-rows",
+  "alg": "R' U' R F R2 D' R U R' D R2 U' F'",
+  "votes": 3,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/U_Rows"
+ },
+ {
+  "caseId": "u-x-checkerboard",
+  "alg": "r U' r' U r' D' r U' r' D r",
+  "votes": 12,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/U_X",
+  "finger": "r U' r' U r' D'(r4) r U' r' D r"
+ },
+ {
+  "caseId": "u-x-checkerboard",
+  "alg": "F R U' R' U R U R' U R U' R' F'",
+  "votes": 7,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/U_X"
+ },
+ {
+  "caseId": "u-x-checkerboard",
+  "alg": "r' U r' D' r U r' D r U' r",
+  "votes": 4,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/U_X"
+ },
+ {
+  "caseId": "u-back-row",
+  "alg": "F R U R' U' F'",
+  "votes": 17,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/U_Upper_Row"
+ },
+ {
+  "caseId": "u-back-row",
+  "alg": "F U R U' R' F'",
+  "votes": 7,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/U_Upper_Row"
+ },
+ {
+  "caseId": "u-back-row",
+  "alg": "F U' R' U R U F' R' U2 R",
+  "votes": 3,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/U_Upper_Row"
+ },
+ {
+  "caseId": "t-left-bar",
+  "alg": "R U R' U' R' F R F'",
+  "votes": 15,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/T_Left_Bar",
+  "finger": "R U(I2) R' U' R' F(I2) R F'(T3)"
+ },
+ {
+  "caseId": "t-left-bar",
+  "alg": "r U R' U' r' F R F'",
+  "votes": 5,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/T_Left_Bar"
+ },
+ {
+  "caseId": "t-right-bar",
+  "alg": "L' U' L U L F' L' F",
+  "votes": 7,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/T_Right_Bar",
+  "finger": "L' U'(i1) L U L F'(m1) L' F(T2)"
+ },
+ {
+  "caseId": "t-right-bar",
+  "alg": "r' F' r U r U' r' F",
+  "votes": 7,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/T_Right_Bar"
+ },
+ {
+  "caseId": "t-right-bar",
+  "alg": "F R U' R' U R U R' F'",
+  "votes": 4,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/T_Right_Bar"
+ },
+ {
+  "caseId": "t-rows",
+  "alg": "R U2 R' U' R U' R2 U2 R U R' U R",
+  "votes": 13,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/T_Rows"
+ },
+ {
+  "caseId": "t-rows",
+  "alg": "F R' F R2 U' R' U' R U R' F2",
+  "votes": 11,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/T_Rows"
+ },
+ {
+  "caseId": "t-rows",
+  "alg": "r' U r U2 R2 F' r U' r' F2 R2",
+  "votes": 1,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/T_Rows"
+ },
+ {
+  "caseId": "t-front-row",
+  "alg": "r' U r U2 R2 F R F' R",
+  "votes": 13,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/T_Bottom_Row"
+ },
+ {
+  "caseId": "t-front-row",
+  "alg": "R U R2 F R F' U r U r'",
+  "votes": 7,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/T_Bottom_Row"
+ },
+ {
+  "caseId": "t-front-row",
+  "alg": "r U' r' U' F R' F' R2 U' R'",
+  "votes": 3,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/T_Bottom_Row"
+ },
+ {
+  "caseId": "t-back-row",
+  "alg": "r' D' r U r' D r U' r U r'",
+  "votes": 15,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/T_Top_Row",
+  "finger": "r'(r4) D' r U r' D r U' r U(I2) r'"
+ },
+ {
+  "caseId": "t-back-row",
+  "alg": "R' D R U' R U R' U R' D' R",
+  "votes": 4,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/T_Top_Row"
+ },
+ {
+  "caseId": "t-back-row",
+  "alg": "F R U R' U' R U' R' U' R U R' F'",
+  "votes": 3,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/T_Top_Row"
+ },
+ {
+  "caseId": "t-columns",
+  "alg": "r U' r2 D' r U2 r' D r2 U r'",
+  "votes": 15,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/T_Columns",
+  "finger": "r U' r2 D'(r4) r U2(I2,M2) r' D r2 U(I2) r'"
+ },
+ {
+  "caseId": "t-columns",
+  "alg": "r2 D' r U r' D r2 U' r' U' r",
+  "votes": 5,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/T_Columns"
+ },
+ {
+  "caseId": "t-columns",
+  "alg": "R' U R2 D r' U2 r D' R2 U' R",
+  "votes": 3,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/T_Columns"
+ },
+ {
+  "caseId": "s-left-bar",
+  "alg": "R U R' U R U2 R'",
+  "votes": 15,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Sune_Left_Bar",
+  "finger": "R U(i1) R' U R U2 R'"
+ },
+ {
+  "caseId": "s-left-bar",
+  "alg": "R' U2 R U R' U R",
+  "votes": 3,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Sune_Left_Bar"
+ },
+ {
+  "caseId": "s-left-bar",
+  "alg": "r U R' U R U2 r'",
+  "votes": 3,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Sune_Left_Bar"
+ },
+ {
+  "caseId": "s-x-checkerboard",
+  "alg": "L' U2 L U2 r U' r' F",
+  "votes": 7,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Sune_X"
+ },
+ {
+  "caseId": "s-x-checkerboard",
+  "alg": "r' F2 r U2 r U' r' F",
+  "votes": 7,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Sune_X"
+ },
+ {
+  "caseId": "s-x-checkerboard",
+  "alg": "L' U2 L U2 L F' L' F",
+  "votes": 4,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Sune_X",
+  "finger": "L' U2 L U2(I2,M2) L F'(i1) L' F(T2)"
+ },
+ {
+  "caseId": "s-forward-slash",
+  "alg": "F R' F' R U2 R U2 R'",
+  "votes": 11,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Sune_Up_Slash",
+  "finger": "F(T2) R' F'(i1) R U2(I2,M2) R U2 R'"
+ },
+ {
+  "caseId": "s-forward-slash",
+  "alg": "M F R' F' r U2 R U2 R'",
+  "votes": 2,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Sune_Up_Slash"
+ },
+ {
+  "caseId": "s-columns",
+  "alg": "R U R' U' R' F R F' R U R' U R U2 R'",
+  "votes": 9,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Sune_Columns"
+ },
+ {
+  "caseId": "s-columns",
+  "alg": "R U R' U R U' R D R' U' R D' R2",
+  "votes": 6,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Sune_Columns"
+ },
+ {
+  "caseId": "s-columns",
+  "alg": "r' F' r2 U R' F' r' F R2 U' R'",
+  "votes": 4,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Sune_Columns"
+ },
+ {
+  "caseId": "s-right-bar",
+  "alg": "R U R' U R' F R F' R U2 R'",
+  "votes": 20,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Sune_Right_Bar",
+  "finger": "R U(i1) R' U(I2) R' F(M2) R F'(T3) R U2 R'"
+ },
+ {
+  "caseId": "s-right-bar",
+  "alg": "R U R' U r' F R F' r U2 R'",
+  "votes": 3,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Sune_Right_Bar"
+ },
+ {
+  "caseId": "s-right-bar",
+  "alg": "R U R' F' R U R' U R U2 R' F R U' R'",
+  "votes": 1,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Sune_Right_Bar"
+ },
+ {
+  "caseId": "s-back-slash",
+  "alg": "r U' r' F R' F' R",
+  "votes": 13,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Sune_Down_Slash"
+ },
+ {
+  "caseId": "s-back-slash",
+  "alg": "R U' r' F R' F' r",
+  "votes": 8,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Sune_Down_Slash"
+ },
+ {
+  "caseId": "s-back-slash",
+  "alg": "R U' L' U R' U' L",
+  "votes": 4,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Sune_Down_Slash",
+  "finger": "R U' L' U(T2) R' U' L"
+ },
+ {
+  "caseId": "as-right-bar",
+  "alg": "R' U' R U' R' U2 R",
+  "votes": 10,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Anti_Sune_Right_Bar"
+ },
+ {
+  "caseId": "as-right-bar",
+  "alg": "R U2 R' U' R U' R'",
+  "votes": 6,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Anti_Sune_Right_Bar"
+ },
+ {
+  "caseId": "as-right-bar",
+  "alg": "L' U' L U' L' U2 L",
+  "votes": 3,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Anti_Sune_Right_Bar",
+  "finger": "L' U'(i1) L U'(m1) L' U2 L"
+ },
+ {
+  "caseId": "as-columns",
+  "alg": "R U R2 F' r F R U' r2 F r",
+  "votes": 8,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Anti_Sune_Columns"
+ },
+ {
+  "caseId": "as-columns",
+  "alg": "R2 D R' U R D' R' U R' U' R U' R'",
+  "votes": 7,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Anti_Sune_Columns"
+ },
+ {
+  "caseId": "as-columns",
+  "alg": "R' U' R U' R' U R' D' R U R' D R2",
+  "votes": 7,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Anti_Sune_Columns"
+ },
+ {
+  "caseId": "as-back-slash",
+  "alg": "F' L F L' U2 L' U2 L",
+  "votes": 7,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Anti_Sune_Down_Slash",
+  "finger": "F'(T3) L F(i1) L' U2(i1,m1) L' U2(I2,M2) L"
+ },
+ {
+  "caseId": "as-back-slash",
+  "alg": "F' r U r' U2 r' F2 r",
+  "votes": 7,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Anti_Sune_Down_Slash"
+ },
+ {
+  "caseId": "as-back-slash",
+  "alg": "F' r U r' U2 L' U2 L",
+  "votes": 2,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Anti_Sune_Down_Slash"
+ },
+ {
+  "caseId": "as-x-checkerboard",
+  "alg": "R U2 R' U2 R' F R F'",
+  "votes": 12,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Anti_Sune_X",
+  "finger": "R U2 R' U2(I2,M2) R' F(I2) R F'(T3)"
+ },
+ {
+  "caseId": "as-x-checkerboard",
+  "alg": "R U2 R' U2 r' F R F' M'",
+  "votes": 2,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Anti_Sune_X"
+ },
+ {
+  "caseId": "as-x-checkerboard",
+  "alg": "R U R' U' R' F R2 U R' U' F'",
+  "votes": 1,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Anti_Sune_X"
+ },
+ {
+  "caseId": "as-forward-slash",
+  "alg": "R' F R F' r U r'",
+  "votes": 11,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Anti_Sune_Up_Slash"
+ },
+ {
+  "caseId": "as-forward-slash",
+  "alg": "r' F R F' r U R'",
+  "votes": 7,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Anti_Sune_Up_Slash"
+ },
+ {
+  "caseId": "as-forward-slash",
+  "alg": "L' U R U' L U R'",
+  "votes": 3,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Anti_Sune_Up_Slash",
+  "finger": "L' U R U'(i1) L U(I2) R'"
+ },
+ {
+  "caseId": "as-left-bar",
+  "alg": "R U2 R' F R' F' R U' R U' R'",
+  "votes": 8,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Anti_Sune_Left_Bar"
+ },
+ {
+  "caseId": "as-left-bar",
+  "alg": "R' U' R U' R' U R' F R F' U R",
+  "votes": 5,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Anti_Sune_Left_Bar"
+ },
+ {
+  "caseId": "as-left-bar",
+  "alg": "R U2 r' F R' F' r U' R U' R'",
+  "votes": 3,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/Anti_Sune_Left_Bar"
+ },
+ {
+  "caseId": "l-mirror",
+  "alg": "F' r U r' U' r' F r",
+  "votes": 8,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/L_Best"
+ },
+ {
+  "caseId": "l-mirror",
+  "alg": "F R U' R' U' R U R' F'",
+  "votes": 7,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/L_Best"
+ },
+ {
+  "caseId": "l-mirror",
+  "alg": "R2 D' R U' R' D R U R",
+  "votes": 2,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/L_Best"
+ },
+ {
+  "caseId": "l-inverse",
+  "alg": "F R' F' R U R U' R'",
+  "votes": 10,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/L_Good",
+  "finger": "F(T2) R' F'(i1) R U R U' R'"
+ },
+ {
+  "caseId": "l-inverse",
+  "alg": "F R' F' r U R U' r'",
+  "votes": 3,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/L_Good"
+ },
+ {
+  "caseId": "l-inverse",
+  "alg": "R U R' U' R' F R F' R U R' U' R' F R F'",
+  "votes": 1,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/L_Good"
+ },
+ {
+  "caseId": "l-pure",
+  "alg": "R U R' U R U' R' U R U' R' U R U2 R'",
+  "votes": 9,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/L_Pure"
+ },
+ {
+  "caseId": "l-pure",
+  "alg": "R U2 R' U' R U R' U' R U R' U' R U' R'",
+  "votes": 6,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/L_Pure"
+ },
+ {
+  "caseId": "l-pure",
+  "alg": "R' U2 R U R' U' R U R' U' R U R' U R",
+  "votes": 3,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/L_Pure"
+ },
+ {
+  "caseId": "l-front-commutator",
+  "alg": "R U2 R D R' U2 R D' R2",
+  "votes": 9,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/L_Front_Commutator"
+ },
+ {
+  "caseId": "l-front-commutator",
+  "alg": "R U2 r D r' U2 r D' r' R'",
+  "votes": 3,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/L_Front_Commutator"
+ },
+ {
+  "caseId": "l-front-commutator",
+  "alg": "R U R' U R' F R F' U2 R' F R F'",
+  "votes": 2,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/L_Front_Commutator"
+ },
+ {
+  "caseId": "l-diagonal",
+  "alg": "R U2 R2 F R F' R U2 R'",
+  "votes": 9,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/L_Diagonal",
+  "finger": "R U2 R2 F(i2) R F'(T3) R U2 R'"
+ },
+ {
+  "caseId": "l-diagonal",
+  "alg": "r U2 R2 F R F' R U2 r'",
+  "votes": 3,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/L_Diagonal"
+ },
+ {
+  "caseId": "l-diagonal",
+  "alg": "R' U' R U R' F' R U R' U' R' F R2",
+  "votes": 2,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/L_Diagonal"
+ },
+ {
+  "caseId": "l-back-commutator",
+  "alg": "R' U2 R' D' R U2 R' D R2",
+  "votes": 9,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/L_Back_Commutator"
+ },
+ {
+  "caseId": "l-back-commutator",
+  "alg": "R U R' U' R' F R2 U' R' U R U R' F'",
+  "votes": 2,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/L_Back_Commutator"
+ },
+ {
+  "caseId": "l-back-commutator",
+  "alg": "r D r' U2 r D' r' U2 r' U' r",
+  "votes": 2,
+  "url": "https://speedcubedb.com/a/3x3/CMLL/L_Back_Commutator"
+ }
+]

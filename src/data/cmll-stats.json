@@ -1,0 +1,13 @@
+{
+  "states": 648,
+  "fullAvg": 11.3,
+  "fullMax": 18,
+  "twoLookAvg": 20.9,
+  "twoLookMax": 30,
+  "skipOrAufOnly": 4,
+  "twoLookOneAlg": 124,
+  "twoLookTwoAlgs": 520,
+  "caseAlgAvgLen": 10.1,
+  "caseAlgMinLen": 6,
+  "caseAlgMaxLen": 17
+}

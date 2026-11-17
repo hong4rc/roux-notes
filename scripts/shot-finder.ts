@@ -1,0 +1,16 @@
+import { chromium } from "playwright-core";
+const exe = `${process.env.HOME}/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell`;
+const out = process.argv[2];
+const b = await chromium.launch({ executablePath: exe });
+const p = await b.newPage({ viewport: { width: 1000, height: 900 } });
+const errs: string[] = [];
+p.on("pageerror", (e) => errs.push(String(e)));
+await p.goto("http://localhost:5273/#/finder");
+await p.waitForTimeout(500);
+await p.getByLabel("Góc trước-trái: sticker ở mặt trái").click();
+await p.getByLabel("Góc sau-trái: sticker ở mặt sau").click();
+await p.getByLabel("Góc sau-phải: sticker ở mặt phải").click();
+await p.waitForTimeout(300);
+await p.screenshot({ path: `${out}/finder.png`, fullPage: true });
+console.log(errs.join("\n") || "no errors");
+await b.close();

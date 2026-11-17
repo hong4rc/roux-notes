@@ -1,9 +1,6 @@
-@import "@fontsource/mali/latin-400.css";
-@import "@fontsource/mali/latin-ext-400.css";
-@import "@fontsource/mali/vietnamese-400.css";
-@import "@fontsource/mali/latin-600.css";
-@import "@fontsource/mali/latin-ext-600.css";
-@import "@fontsource/mali/vietnamese-600.css";
+/* the weight files carry unicode-range, so each subset loads only for the characters on the page */
+@import "@fontsource/mali/400.css";
+@import "@fontsource/mali/600.css";
 
 :root {
   --paper: #fbf7ec;

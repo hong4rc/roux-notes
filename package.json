@@ -2,6 +2,16 @@
   "name": "roux-notes",
   "private": true,
   "version": "0.1.0",
+  "description": "A hand-drawn guide to the Roux method for the Rubik's Cube, in Vietnamese and English.",
+  "homepage": "https://hong4rc.github.io/roux-notes/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hong4rc/roux-notes.git"
+  },
+  "bugs": "https://github.com/hong4rc/roux-notes/issues",
+  "license": "MIT",
+  "author": "Anh Hong (https://github.com/hong4rc)",
+  "keywords": ["rubiks-cube", "roux", "speedcubing", "cmll", "vietnamese"],
   "type": "module",
   "scripts": {
     "dev": "vite --port 5273 --strictPort",

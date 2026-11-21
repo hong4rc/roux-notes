@@ -204,6 +204,8 @@ export interface PermuteOption {
   title: string;
   pros: string[];
   cons: string[];
+  /** how to cut the algorithm into pieces a person can remember (not how a machine would search it) */
+  memo?: string;
 }
 
 export interface PermuteAlg {
@@ -292,6 +294,22 @@ const diagonalOptions = (): PermuteOption[] => [
       tr("Chỉ dùng R, U, F.", "Uses only R, U and F."),
     ],
     cons: [tr("Không có đoạn lặp, khó nhớ hơn cách có nhịp.", "No repeated part, harder to remember than the rhythmic one.")],
+  },
+  {
+    alg: "R U' L U2 R' U L' R U' L U2 R' U L' U",
+    title: tr("Tham khảo: 15 nước, một mẩu bảy nước làm hai lần", "For reference: 15 moves, one seven-move piece done twice"),
+    pros: [
+      tr("Chỉ cần thuộc một mẩu bảy nước, làm hai lần liền, rồi thêm một nước U cuối (nước U cuối là bước chỉnh).", "You only learn one seven-move piece, do it twice in a row, then add a final U (that last U is the adjustment)."),
+      tr("Không có nước F và chỉ một kiểu xoay đôi (U2). Tay phải lo R, tay trái lo L, U xen giữa.", "No F turns and only one kind of double turn (U2). The right hand turns R, the left hand turns L, with U in between."),
+    ],
+    cons: [
+      tr("Dài hơn cách 11 và 12 nước.", "Longer than the 11 and 12 move options."),
+      tr("L chạm vào khối trái (được trả lại ở cuối): xoay sai chiều là hỏng khối.", "L touches the left block (it comes back at the end): a turn in the wrong direction breaks the block."),
+    ],
+    memo: tr(
+      "Học thành một mẩu: R U' L U2 R' U L'. Làm mẩu đó, làm lại đúng mẩu đó một lần nữa, rồi U.",
+      "Learn it as one piece: R U' L U2 R' U L'. Do the piece, do exactly the same piece once more, then U.",
+    ),
   },
 ];
 

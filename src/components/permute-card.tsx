@@ -53,6 +53,7 @@ function OptionBody({ o, shortest, drill }: { o: PermuteOption; shortest: boolea
           </span>
         ))}
       </span>
+      {o.memo && <span className="small muted" style={{ display: "block", margin: "4px 0" }}>{o.memo}</span>}
       <RuleFingers alg={o.alg} />
       {drill && <HandDrill />}
     </>

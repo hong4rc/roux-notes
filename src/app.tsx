@@ -1,6 +1,7 @@
 import { Layout } from "./components/layout";
 import { CmllDetail, CmllHome, CmllLibrary, CmllTwoLook } from "./pages/cmll";
 import { Finder } from "./pages/finder";
+import { RecognizeDrill } from "./pages/recognize-drill";
 import { LSE_ANCHOR_PAGE, LseAdvancedPage, LseLookupPage, LseOverviewPage } from "./pages/lse";
 import { Advanced, FirstBlock, LearnHub, SecondBlock } from "./pages/learn";
 import { GlossaryPage } from "./pages/glossary";
@@ -58,6 +59,7 @@ export function App() {
     else page = <NotFound />;
   }
   else if (a === "finder") page = <Finder />;
+  else if (a === "nhan-dang") page = <RecognizeDrill />;
   else if (a === "practice") page = <PracticePage />;
   else if (a === "solve") page = <SolvePage />;
   else if (a === "cmll") {

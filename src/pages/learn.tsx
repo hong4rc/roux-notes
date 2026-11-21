@@ -1,3 +1,5 @@
+import { WithToc } from "../components/toc";
+import { BlockCheckPics, BlockExample } from "../components/block-example";
 import { useMemo } from "react";
 import { PiecesIso, ALL_CENTRES, CMLL_PIECES, FB_PIECES, LSE_PIECES, SB_PIECES } from "../components/pieces-iso";
 import { AlgText, Callout, Fig, PageHead, Why } from "../components/ui";
@@ -6,14 +8,15 @@ import lse from "../data/lse-data.json";
 import { tr } from "../lib/i18n";
 import { href } from "../lib/router";
 
+// The course numbering used everywhere: "Chuẩn bị" (notation), Bước 1 to 4, then Nâng cao A and B.
 const steps = () => [
-  { to: "/glossary", n: "0", basic: true, title: tr("Ký hiệu", "Notation"), text: tr("Đọc được R U R' và cách gọi từng lát, từng mặt.", "Read R U R' and learn the name of every slice and face.") },
-  { to: "/learn/first-block", n: "1", basic: true, title: tr("Khối đầu (FB)", "First block (FB)"), text: tr("Dựng khối 1×2×3 bên trái bằng trực giác, không cần thuật toán.", "Build the 1×2×3 block on the left by intuition, with no algorithms.") },
-  { to: "/learn/second-block", n: "2", basic: true, title: tr("Khối thứ hai (SB)", "Second block (SB)"), text: tr("Dựng khối bên phải chỉ bằng R, r, U, M để giữ khối trái.", "Build the right block using only R, r, U and M, so the left block stays intact.") },
-  { to: "/cmll/2-look", n: "3", basic: true, title: "CMLL 2-look", text: tr("Giải bốn góc bằng chín thuật toán, hai lượt.", "Solve the four corners with nine algorithms in two looks.") },
-  { to: "/lse", n: "4", basic: true, title: "LSE", text: tr("EO, UL/UR rồi 4c: sáu cạnh cuối chỉ bằng M và U.", "EO, UL/UR, then 4c: the last six edges using only M and U.") },
-  { to: "/cmll/all", n: "5", basic: false, title: tr("Đủ 42 case CMLL", "All 42 CMLL cases"), text: tr("Một thuật toán cho mỗi case, bớt gần một nửa số nước.", "One algorithm per case, saving almost half of the moves.") },
-  { to: "/learn/advanced", n: "6", basic: false, title: tr("Tối ưu", "Optimization"), text: tr("Nhìn trước, EOLR, luyện tập và các lỗi hay gặp.", "Lookahead, EOLR, practice and common mistakes.") },
+  { to: "/glossary", badge: tr("Chuẩn bị", "Preparation"), basic: true, title: tr("Ký hiệu", "Notation"), text: tr("Đọc được R U R' và cách gọi từng lát, từng mặt.", "Read R U R' and learn the name of every slice and face.") },
+  { to: "/learn/first-block", badge: tr("Bước 1", "Step 1"), basic: true, title: tr("Khối đầu", "First block"), text: tr("Dựng khối 1×2×3 bên trái bằng trực giác, không cần thuật toán.", "Build the 1×2×3 block on the left by intuition, with no algorithms.") },
+  { to: "/learn/second-block", badge: tr("Bước 2", "Step 2"), basic: true, title: tr("Khối thứ hai", "Second block"), text: tr("Dựng khối bên phải chỉ bằng R, r, U, M để giữ khối trái.", "Build the right block using only R, r, U and M, so the left block stays intact.") },
+  { to: "/cmll/2-look", badge: tr("Bước 3", "Step 3"), basic: true, title: "CMLL 2-look", text: tr("Giải bốn góc bằng chín thuật toán, hai lượt.", "Solve the four corners with nine algorithms in two looks.") },
+  { to: "/lse", badge: tr("Bước 4", "Step 4"), basic: true, title: "LSE", text: tr("Lật cạnh, đặt hai cạnh trái-phải, rồi xếp bốn cạnh cuối: sáu cạnh cuối chỉ bằng M và U.", "Flip the edges, place the left and right edges, then line up the last four: the last six edges using only M and U.") },
+  { to: "/cmll/all", badge: tr("Nâng cao A", "Advanced A"), basic: false, title: tr("Đủ 42 case CMLL", "All 42 CMLL cases"), text: tr("Một thuật toán cho mỗi case, bớt gần một nửa số nước.", "One algorithm per case, saving almost half of the moves.") },
+  { to: "/learn/advanced", badge: tr("Nâng cao B", "Advanced B"), basic: false, title: tr("Tối ưu", "Optimization"), text: tr("Nhìn trước, gộp hai bước đầu của LSE, luyện tập và các lỗi hay gặp.", "Lookahead, merging the first two LSE steps, practice and common mistakes.") },
 ];
 
 export function LearnHub() {
@@ -28,35 +31,37 @@ export function LearnHub() {
       <div className="stage-row">
         <a className="card stage" href={href("/learn/first-block")}>
           <PiecesIso pieces={[...FB_PIECES, ...ALL_CENTRES]} yaw={1} width={150} title={tr("Khối đầu", "First block")} />
-          <h3>{tr("1. Khối đầu", "1. First block")}</h3>
+          <h3>{tr("Bước 1 · Khối đầu", "Step 1 · First block")}</h3>
           <p>{tr("Bên trái, 1×2×3", "On the left, 1×2×3")}</p>
         </a>
         <a className="card stage" href={href("/learn/second-block")}>
           <PiecesIso pieces={[...FB_PIECES, ...SB_PIECES, ...ALL_CENTRES]} yaw={0} width={150} title={tr("Hai khối", "Two blocks")} />
-          <h3>{tr("2. Khối thứ hai", "2. Second block")}</h3>
+          <h3>{tr("Bước 2 · Khối thứ hai", "Step 2 · Second block")}</h3>
           <p>{tr("Bên phải, 1×2×3", "On the right, 1×2×3")}</p>
         </a>
         <a className="card stage" href={href("/cmll/2-look")}>
           <PiecesIso pieces={[...FB_PIECES, ...SB_PIECES, ...CMLL_PIECES, ...ALL_CENTRES]} width={150} title={tr("Hai khối và bốn góc", "Two blocks and four corners")} />
-          <h3>3. CMLL</h3>
+          <h3>{tr("Bước 3 · CMLL", "Step 3 · CMLL")}</h3>
           <p>{tr("Bốn góc tầng trên", "The four top-layer corners")}</p>
         </a>
         <a className="card stage" href={href("/lse")}>
           <PiecesIso pieces={[...FB_PIECES, ...SB_PIECES, ...CMLL_PIECES, ...LSE_PIECES, ...ALL_CENTRES]} width={150} title={tr("Đã giải", "Solved")} />
-          <h3>4. LSE</h3>
+          <h3>{tr("Bước 4 · LSE", "Step 4 · LSE")}</h3>
           <p>{tr("Sáu cạnh cuối", "The last six edges")}</p>
         </a>
       </div>
-      <ol className="step-list">
+      <ul style={{ listStyle: "none", padding: 0, margin: "18px 0" }}>
         {STEPS.map((s) => (
-          <li key={s.to}>
-            <h3>
-              <a href={href(s.to)}>{s.title}</a> <span className={`tag ${s.basic ? "ok" : "warn"}`}>{s.basic ? tr("Cơ bản", "Basic") : tr("Nâng cao", "Advanced")}</span>
-            </h3>
-            <p style={{ margin: 0 }}>{s.text}</p>
+          <li key={s.to} style={{ margin: "12px 0" }}>
+            <a className="card" href={href(s.to)} style={{ display: "block", textDecoration: "none", color: "inherit", padding: "12px 16px", minHeight: 44 }}>
+              <h3 style={{ margin: "0 0 4px" }}>
+                <span className="tag">{s.badge}</span> {s.title} <span className={`tag ${s.basic ? "ok" : "warn"}`}>{s.basic ? tr("Cơ bản", "Basic") : tr("Nâng cao", "Advanced")}</span>
+              </h3>
+              <p style={{ margin: 0 }}>{s.text}</p>
+            </a>
           </li>
         ))}
-      </ol>
+      </ul>
       <p>
         <a href={href("/practice")}>{tr("Luyện tập scramble cho từng bước →", "Practice scrambles for each step →")}</a>
         {" · "}
@@ -70,15 +75,15 @@ export function LearnHub() {
 
 export function FirstBlock() {
   return (
-    <>
+    <WithToc items={[{ id: "cach-dung", label: tr("Cách dựng", "How to build it") }, { id: "vi-du", label: tr("Ví dụ thật", "A real example") }, { id: "kiem-tra", label: tr("Tự kiểm tra", "Self-check") }, { id: "loi", label: tr("Lỗi thường gặp", "Common mistakes") }]}>
       <PageHead
-        title={tr("Bước 1: Khối đầu (FB)", "Step 1: First block (FB)")}
+        title={tr("Bước 1: Khối đầu", "Step 1: First block")}
         crumbs={
           <>
             <a href={href("/learn")}>{tr("Học từng bước", "Learn step by step")}</a> › {tr("Khối đầu", "First block")}
           </>
         }
-        lead={tr("Dựng khối 1×2×3 ở bên trái: ba cạnh, hai góc và tâm trái. Đây là bước tự do nhất của Roux: bạn được dùng mọi mặt, và không có thuật toán nào để học thuộc.", "Build the 1×2×3 block on the left: three edges, two corners and the left centre. This is the freest step of Roux: you may use every face, and there is no algorithm to memorize.")}
+        lead={tr("Dựng khối 1×2×3 ở bên trái: ba cạnh, hai góc và tâm trái. Đây là bước tự do nhất của Roux: bạn được dùng mọi mặt, và không có thuật toán nào để học thuộc. Trang này có một ví dụ thật, một bảng tự kiểm tra và nút luyện tập.", "Build the 1×2×3 block on the left: three edges, two corners and the left centre. This is the freest step of Roux: you may use every face, and there is no algorithm to memorize. This page has a real example, a self-check table and a practice button.")}
       />
       <div className="figs">
         <Fig caption={tr("Mục tiêu: năm mảnh cạnh–góc và tâm bên trái (các mảnh khác tô xám)", "Goal: the five edge and corner pieces and the left centre (the other pieces are greyed out)")}>
@@ -104,24 +109,30 @@ export function FirstBlock() {
         </div>
       </div>
 
-      <Why title={tr("Vì sao bắt đầu bằng một khối 1×2×3, không phải “chữ thập” như CFOP?", "Why start with a 1×2×3 block and not a “cross” like CFOP?")}>
+      <Why title={tr("Vì sao bắt đầu bằng một khối 1×2×3, không phải “chữ thập” như phương pháp CFOP?", "Why start with a 1×2×3 block and not a “cross” like the CFOP method?")}>
         <p>
           {tr(
             <>
               Khối 1×2×3 gồm <strong>năm mảnh cạnh–góc cùng tâm</strong>, một phần lớn của khối, nên bạn tiến xa hơn nhiều so với một chữ thập (bốn cạnh).
-              Quan trọng hơn: sau khối đầu, bạn vẫn còn nguyên các mặt phải, trên và lát giữa để làm tiếp mà không phải xoay cả khối. Theo Scheopner, khối đầu tối ưu (không quan tâm màu,
-              đếm nước STM) trung bình khoảng 4,74 nước; nếu chỉ trung hòa màu kiểu x2y thì khoảng 5,19 nước.
+              Quan trọng hơn: sau khối đầu, bạn vẫn còn nguyên các mặt phải, trên và lát giữa để làm tiếp mà không phải xoay cả khối. Theo Scheopner, nếu được tự chọn màu nào làm khối đầu và
+              đếm mỗi lượt xoay một lớp (kể cả nửa vòng) là một nước, khối đầu tối ưu trung bình khoảng 4,74 nước.
             </>,
             <>
               The 1×2×3 block holds <strong>five edge and corner pieces plus a centre</strong>, a large part of the cube, so you get much further than with a cross (four edges).
-              More important: after the first block, the right face, the top and the middle slice are still untouched, so you can carry on without rotating the whole cube. According to Scheopner, an optimal first block
-              (colour-neutral, counted in slice-turn metric) takes about 4.74 moves on average; with x2y colour neutrality only, it is about 5.19.
+              More important: after the first block, the right face, the top and the middle slice are still untouched, so you can carry on without rotating the whole cube. According to Scheopner, if you may choose which colour the first block uses
+              and every half turn counts as one move, an optimal first block takes about 4.74 moves on average.
             </>,
           )}
         </p>
       </Why>
 
-      <h2>{tr("Cách dựng: ba việc nhỏ", "How to build it: three small jobs")}</h2>
+      <h2 id="cach-dung">{tr("Cách dựng: ba việc nhỏ", "How to build it: three small jobs")}</h2>
+      <p>
+        {tr(
+          "Làm đúng thứ tự dưới đây. Mỗi việc thường chỉ cần một đến bốn nước. Sau mỗi việc, nhìn lại các mảnh đã xong: nếu một mảnh bị tuột thì trả nó về trước khi làm việc tiếp theo.",
+          "Do the jobs in the order below. Each job usually takes one to four moves. After each job, look again at the pieces already done: if one has slipped out, put it back before the next job.",
+        )}
+      </p>
       <ol className="step-list">
         <li>
           <h3>{tr("Đặt cạnh DL cạnh tâm trái và tâm dưới", "Place the DL edge next to the left and down centres")}</h3>
@@ -165,8 +176,8 @@ export function FirstBlock() {
           <Why title={tr("Vì sao ghép thành cặp trước khi chèn?", "Why join the pair before inserting?")}>
             <p>
               {tr(
-                "Hai mảnh nằm riêng thì mỗi mảnh cần vài nước. Khi đã ghép thành cặp (màu sát màu), một lần chèn đưa cả hai vào, thường tiết kiệm ít nhất vài nước. Đây là cùng ý với F2L trong CFOP, nhưng ở Roux bạn làm đúng hai cặp rồi dừng.",
-                "Two separate pieces each need a few moves. Once they are joined into a pair (colour touching colour), one insertion puts both in, which usually saves at least a few moves. This is the same idea as F2L in CFOP, but in Roux you do exactly two pairs and stop.",
+                "Hai mảnh nằm riêng thì mỗi mảnh cần vài nước. Khi đã ghép thành cặp (màu sát màu), một lần chèn đưa cả hai vào, thường tiết kiệm ít nhất vài nước. Người chơi CFOP cũng ghép cặp góc–cạnh theo cách này, nhưng ở Roux bạn làm đúng hai cặp rồi dừng.",
+                "Two separate pieces each need a few moves. Once they are joined into a pair (colour touching colour), one insertion puts both in, which usually saves at least a few moves. CFOP players also join corner–edge pairs this way, but in Roux you do exactly two pairs and stop.",
               )}
             </p>
           </Why>
@@ -197,14 +208,21 @@ export function FirstBlock() {
         </li>
       </ol>
 
-      <h2>{tr("Kiểm tra trước khi sang bước sau", "Check before moving on")}</h2>
+      <h2 id="vi-du">{tr("Xem một ví dụ thật", "See a real example")}</h2>
+      <BlockExample kind="first" />
+
+      <h2 id="kiem-tra">{tr("Tự kiểm tra: khối đầu đã xong chưa?", "Self-check: is the first block done?")}</h2>
+      <p>
+        {tr("Cầm cube của bạn và so với ba hình dưới đây. Chỉ các mảnh của khối đầu được tô màu; mảnh khác tô xám vì chúng chưa cần đúng.", "Hold your cube and compare it with the three pictures below. Only the pieces of the first block are coloured; the others are grey because they do not need to be right yet.")}
+      </p>
+      <BlockCheckPics kind="first" />
       <ul>
         <li>{tr("Nhìn từ bên trái: hai hàng ba ô cùng màu với tâm trái.", "Seen from the left: two rows of three squares in the colour of the left centre.")}</li>
         <li>{tr("Nhìn mặt trước, mặt sau và mặt dưới: nửa trái của các mặt đó khớp màu tâm.", "Look at the front, back and down faces: the left half of each face matches its centre colour.")}</li>
         <li>{tr("Các mảnh còn lại không quan trọng: vị trí và hướng của chúng sẽ được xử lý sau.", "The other pieces do not matter yet: their position and orientation are handled later.")}</li>
       </ul>
 
-      <h2>{tr("Lỗi thường gặp", "Common mistakes")}</h2>
+      <h2 id="loi">{tr("Lỗi thường gặp", "Common mistakes")}</h2>
       <ul>
         <li>
           {tr(
@@ -248,7 +266,10 @@ export function FirstBlock() {
       <p>
         {tr("Xong khối đầu?", "First block done?")} <a href={href("/learn/second-block")}>{tr("Sang bước 2: khối thứ hai →", "On to step 2: the second block →")}</a>
       </p>
-    </>
+      <p>
+        <a className="btn primary" href={href("/practice?step=first-block")}>{tr("Luyện bước này →", "Practise this step →")}</a>
+      </p>
+    </WithToc>
   );
 }
 
@@ -256,9 +277,9 @@ export function FirstBlock() {
 
 export function SecondBlock() {
   return (
-    <>
+    <WithToc items={[{ id: "cach-dung", label: tr("Cách dựng", "How to build it") }, { id: "vi-du", label: tr("Ví dụ thật", "A real example") }, { id: "kiem-tra", label: tr("Tự kiểm tra", "Self-check") }, { id: "loi", label: tr("Lỗi thường gặp", "Common mistakes") }]}>
       <PageHead
-        title={tr("Bước 2: Khối thứ hai (SB)", "Step 2: Second block (SB)")}
+        title={tr("Bước 2: Khối thứ hai", "Step 2: Second block")}
         crumbs={
           <>
             <a href={href("/learn")}>{tr("Học từng bước", "Learn step by step")}</a> › {tr("Khối thứ hai", "Second block")}
@@ -307,7 +328,7 @@ export function SecondBlock() {
         </p>
       </Why>
 
-      <h2>{tr("Cách dựng", "How to build it")}</h2>
+      <h2 id="cach-dung">{tr("Cách dựng", "How to build it")}</h2>
       <ol className="step-list">
         <li>
           <h3>{tr("Đưa cạnh DR vào chỗ", "Put the DR edge in place")}</h3>
@@ -343,7 +364,21 @@ export function SecondBlock() {
         </li>
       </ol>
 
-      <h2>{tr("Lỗi thường gặp", "Common mistakes")}</h2>
+      <h2 id="vi-du">{tr("Xem một ví dụ thật", "See a real example")}</h2>
+      <BlockExample kind="second" />
+
+      <h2 id="kiem-tra">{tr("Tự kiểm tra: hai khối đã xong chưa?", "Self-check: are both blocks done?")}</h2>
+      <p>
+        {tr("Bây giờ cube phải có một khối ở mỗi bên, và bốn tâm (trên, trước, sau, dưới) nằm đúng chỗ. Tô màu trong hình là các mảnh của hai khối; mảnh khác tô xám.", "The cube must now have one block on each side, and the four centres (top, front, back, bottom) in place. The coloured pieces in the pictures belong to the two blocks; the others are grey.")}
+      </p>
+      <BlockCheckPics kind="second" />
+      <ul>
+        <li>{tr("Nhìn từ bên phải: hai hàng ba ô cùng màu với tâm phải; từ bên trái cũng vậy với tâm trái.", "Seen from the right: two rows of three squares in the colour of the right centre; the same from the left with the left centre.")}</li>
+        <li>{tr("Mặt dưới: hai cột ngoài cùng màu với tâm dưới, cột giữa là các cạnh chưa cần đúng.", "The bottom face: the two outer columns match the bottom centre; the middle column holds edges that do not need to be right yet.")}</li>
+        <li>{tr("Chỉ còn tầng trên và lát giữa chưa xong.", "Only the top layer and the middle slice are left.")}</li>
+      </ul>
+
+      <h2 id="loi">{tr("Lỗi thường gặp", "Common mistakes")}</h2>
       <ul>
         <li>
           {tr(
@@ -387,7 +422,10 @@ export function SecondBlock() {
       <p>
         {tr("Hai khối đã xong?", "Both blocks done?")} <a href={href("/cmll/2-look")}>{tr("Sang bước 3: CMLL 2-look →", "On to step 3: CMLL 2-look →")}</a>
       </p>
-    </>
+      <p>
+        <a className="btn primary" href={href("/practice?step=second-block")}>{tr("Luyện bước này →", "Practise this step →")}</a>
+      </p>
+    </WithToc>
   );
 }
 
@@ -414,30 +452,30 @@ export function Advanced() {
     return groups;
   }, []);
   return (
-    <>
+    <WithToc items={[{ id: "hoc-cmll", label: tr("1. Học CMLL", "1. Learn CMLL") }, { id: "nhin-truoc", label: tr("2. Nhìn trước", "2. Look ahead") }, { id: "lse-hai-buoc", label: tr("3. LSE hai bước", "3. Two-step LSE") }, { id: "ke-hoach", label: tr("4. Kế hoạch luyện", "4. Practice plan") }, { id: "tham-khao", label: tr("5. Tra nhanh", "5. Quick reference") }]}>
       <PageHead
-        title={tr("Tối ưu và nâng cao", "Optimization and advanced")}
+        title={tr("Nâng cao B: Tối ưu", "Advanced B: Optimization")}
         crumbs={
           <>
-            <a href={href("/learn")}>{tr("Học từng bước", "Learn step by step")}</a> › {tr("Nâng cao", "Advanced")}
+            <a href={href("/learn")}>{tr("Học từng bước", "Learn step by step")}</a> › {tr("Nâng cao B", "Advanced B")}
           </>
         }
-        lead={tr("Khi bốn bước đã quen tay, đây là những chỗ đáng đầu tư để nhanh hơn.", "Once the four steps feel natural, these are the places worth investing in to get faster.")}
+        lead={tr("Khi bốn bước (khối đầu, khối thứ hai, CMLL, LSE) đã quen tay, đây là những chỗ đáng đầu tư để nhanh hơn.", "Once the four steps (first block, second block, CMLL, LSE) feel natural, these are the places worth investing in to get faster.")}
       />
-      <h2>{tr("1. Học CMLL thông minh hơn", "1. Learn CMLL more cleverly")}</h2>
+      <h2 id="hoc-cmll">{tr("1. Học CMLL thông minh hơn", "1. Learn CMLL more cleverly")}</h2>
       <p>
         {tr(
           <>
-            42 case nghe nhiều, nhưng chúng không độc lập. Nếu tính các case đối xứng gương và nghịch đảo của nhau là một họ, thì 42 case rút lại còn <strong>{pairs} họ</strong> (do chương trình tính từ
-            danh sách thuật toán). Học theo họ: học một thuật toán, rồi luyện thuật toán gương hoặc nghịch đảo bằng cách đảo trái–phải hoặc làm ngược.
+            42 case nghe nhiều, nhưng chúng không độc lập. Nếu tính các case đối xứng gương và nghịch đảo của nhau là một bộ, thì 42 case rút lại còn <strong>{pairs} bộ</strong> (do chương trình tính từ
+            danh sách thuật toán). Học theo bộ: học một thuật toán, rồi luyện thuật toán gương hoặc nghịch đảo bằng cách đảo trái–phải hoặc làm ngược.
           </>,
           <>
-            42 cases sounds like a lot, but they are not independent. If you count cases that are mirrors or inverses of each other as one family, the 42 cases shrink to <strong>{pairs} families</strong> (computed
-            by the program from the algorithm list). Learn by family: learn one algorithm, then practise the mirror or inverse algorithm by swapping left and right or by doing it backwards.
+            42 cases sounds like a lot, but they are not independent. If you count cases that are mirrors or inverses of each other as one group, the 42 cases shrink to <strong>{pairs} groups</strong> (computed
+            by the program from the algorithm list). Learn by group: learn one algorithm, then practise the mirror or inverse algorithm by swapping left and right or by doing it backwards.
           </>,
         )}
       </p>
-      <Why title={tr("Vì sao học theo họ lại nhanh?", "Why is learning by family faster?")}>
+      <Why title={tr("Vì sao học theo bộ lại nhanh?", "Why is learning by group faster?")}>
         <p>
           {tr(
             "Thuật toán gương có cùng nhịp tay nhưng đổi bên (R↔L, chiều quay đảo ngược). Thuật toán nghịch đảo chỉ là làm ngược lại từng nước. Cả hai gần như không phải nhớ thêm gì mới: chỉ cần nhận ra case.",
@@ -456,18 +494,27 @@ export function Advanced() {
             </>,
           )}
         </li>
-        <li>{tr("Luyện nhận dạng không cần thuật toán: lật thẻ ảnh, gọi tên case trong ba giây.", "Practise recognition without algorithms: flip the picture cards and name the case within three seconds.")}</li>
+        <li>
+          {tr(
+            <>
+              Luyện nhận dạng không cần thuật toán: mở <a href={href("/nhan-dang")}>Nhận dạng nhanh</a>, nhìn hình một case, chọn nhóm và kiểu đổi chỗ, rồi lật đáp án.
+            </>,
+            <>
+              Practise recognition without algorithms: open <a href={href("/nhan-dang")}>Quick recognition</a>, look at the picture of a case, pick its group and swap type, then flip the answer.
+            </>,
+          )}
+        </li>
       </ul>
 
-      <h2>{tr("2. Nhìn trước để không khựng", "2. Look ahead so you do not pause")}</h2>
+      <h2 id="nhin-truoc">{tr("2. Nhìn trước để không khựng", "2. Look ahead so you do not pause")}</h2>
       <ul>
         <li>
           {tr(
             <>
-              <strong>Từ SB sang CMLL:</strong> trong lúc chèn cặp cuối của khối thứ hai, hãy đoán case CMLL sắp tới.
+              <strong>Từ khối thứ hai sang CMLL:</strong> trong lúc chèn cặp cuối của khối thứ hai, hãy đoán case CMLL sắp tới.
             </>,
             <>
-              <strong>From SB to CMLL:</strong> while inserting the last pair of the second block, guess the CMLL case that is coming.
+              <strong>From the second block to CMLL:</strong> while inserting the last pair of the second block, guess the CMLL case that is coming.
             </>,
           )}
         </li>
@@ -501,15 +548,15 @@ export function Advanced() {
         </p>
       </Why>
 
-      <h2>{tr("3. LSE: từ ba bước xuống hai bước", "3. LSE: from three steps down to two")}</h2>
+      <h2 id="lse-hai-buoc">{tr("3. LSE: từ ba bước xuống hai bước", "3. LSE: from three steps down to two")}</h2>
       <p>
         {tr(
           <>
-            Bước EO và UL/UR có thể gộp thành một thuật toán (cùng ý với EOLR). Với dữ liệu của trang này, trung bình LSE giảm từ <strong>{lse.stats.threeStepAvg}</strong> xuống{" "}
+            Hai bước đầu của LSE là lật cạnh (EO) rồi đặt hai cạnh trái-phải (UL/UR). Hai bước này có thể gộp thành một thuật toán (người chơi gọi là EOLR: lật cạnh và đặt cạnh trái-phải trong một lần). Với dữ liệu của trang này, trung bình LSE giảm từ <strong>{lse.stats.threeStepAvg}</strong> xuống{" "}
             <strong>{lse.stats.twoStepAvg}</strong> nước; giải tối ưu một mạch còn <strong>{lse.stats.optimalAvg}</strong>. Đổi lại phải nhận dạng phức tạp hơn và học thêm thuật toán.
           </>,
           <>
-            The EO and UL/UR steps can be merged into one algorithm (the same idea as EOLR). With the data of this site, the LSE average drops from <strong>{lse.stats.threeStepAvg}</strong> to{" "}
+            The first two LSE steps are flipping the edges (EO) and placing the left and right edges (UL/UR). They can be merged into one algorithm (players call it EOLR: edge flip and left-right edge placement in one go). With the data of this site, the LSE average drops from <strong>{lse.stats.threeStepAvg}</strong> to{" "}
             <strong>{lse.stats.twoStepAvg}</strong> moves; an optimal single-pass solve takes <strong>{lse.stats.optimalAvg}</strong>. In return, recognition is harder and you must learn more algorithms.
           </>,
         )}
@@ -518,7 +565,7 @@ export function Advanced() {
         <a href={href("/lse")}>{tr("Mở trang LSE →", "Open the LSE page →")}</a>
       </p>
 
-      <h2>{tr("4. Kế hoạch luyện", "4. Practice plan")}</h2>
+      <h2 id="ke-hoach">{tr("4. Kế hoạch luyện", "4. Practice plan")}</h2>
       <ol>
         <li>
           {tr(
@@ -542,7 +589,7 @@ export function Advanced() {
         </p>
       </Callout>
 
-      <h2>{tr("5. Thuật toán tham khảo nhanh", "5. Quick algorithm reference")}</h2>
+      <h2 id="tham-khao">{tr("5. Thuật toán tham khảo nhanh", "5. Quick algorithm reference")}</h2>
       <div className="alg-row">
         <span className="small muted">Sune</span>
         <AlgText alg="R U R' U R U2 R'" />
@@ -552,9 +599,9 @@ export function Advanced() {
         <AlgText alg="R U2 R' U' R U' R'" />
       </div>
       <div className="alg-row">
-        <span className="small muted">{tr("EO “mũi tên”", "“Arrow” EO")}</span>
+        <span className="small muted">{tr("Lật cạnh (EO) kiểu “mũi tên”", "“Arrow” edge flip (EO)")}</span>
         <AlgText alg="M U M'" />
       </div>
-    </>
+    </WithToc>
   );
 }

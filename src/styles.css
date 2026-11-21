@@ -228,9 +228,84 @@ main.wrap {
 .menu-btn {
   display: none;
 }
-@media (max-width: 1120px) {
+.nav-quick {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  order: 2;
+}
+.nav-links {
+  order: 1;
+}
+.nav-tools {
+  order: 3;
+}
+.scheme-menu {
+  position: relative;
+}
+.scheme-menu > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  list-style: none;
+  min-height: 38px;
+}
+.scheme-menu > summary::-webkit-details-marker {
+  display: none;
+}
+.scheme-menu[open] > summary {
+  background: var(--hi);
+}
+.scheme-pop {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: min(380px, calc(100vw - 32px));
+  z-index: 40;
+}
+.scheme-pop p {
+  margin: 6px 0 10px;
+}
+.scheme-ask {
+  background: var(--hi);
+  border-bottom: 2px dashed var(--ink-soft);
+}
+.scheme-ask-in {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+.scheme-ask-in .bar {
+  margin: 0;
+}
+@media (max-width: 1250px) {
+  .scheme-menu-label {
+    display: none;
+  }
+  .nav-links {
+    gap: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .nav-links a {
+    padding: 4px 6px;
+    font-size: 0.95rem;
+  }
+  .brand {
+    margin-right: 4px;
+  }
+}
+@media (max-width: 959px) {
   .menu-btn {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .nav-quick {
     margin-left: auto;
   }
   .nav-in {
@@ -238,7 +313,7 @@ main.wrap {
   }
   .nav-links {
     display: none;
-    order: 2;
+    order: 3;
     width: 100%;
     flex: none;
     flex-direction: column;
@@ -248,7 +323,7 @@ main.wrap {
     display: flex;
   }
   .nav-links a {
-    padding: 10px 12px;
+    padding: 12px 12px;
     font-size: 1.1rem;
   }
   .nav-tools {
@@ -257,10 +332,26 @@ main.wrap {
   .nav-links.open ~ .nav-tools,
   .nav-tools.open {
     display: flex;
-    order: 3;
+    order: 4;
     width: 100%;
     flex-wrap: wrap;
     padding: 4px 0 8px;
+  }
+  .brand {
+    margin-right: 0;
+    font-size: 1.25rem;
+  }
+  .scheme-menu-label {
+    display: none;
+  }
+  .scheme-menu {
+    position: static;
+  }
+  .scheme-pop {
+    left: 16px;
+    right: 16px;
+    top: 100%;
+    width: auto;
   }
 }
 
@@ -1286,4 +1377,140 @@ main [id] {
   flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 4px;
+}
+
+/* ---- home: course strip and tools ---- */
+.course-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+  gap: 16px;
+}
+.course-step {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.course-step h3 {
+  margin: 0;
+}
+.course-step p {
+  margin: 0;
+  flex: 1;
+}
+.course-step.current {
+  background: var(--hi);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+.course-step.done h3 a::before {
+  content: "✓ ";
+  color: var(--green);
+}
+.course-step-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.grid.cols-4 {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+}
+.tools-row .card h3 {
+  font-size: 1.05rem;
+}
+
+/* "mark this step as done" and other check boxes with a label */
+.check-label,
+.step-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.check-label input,
+.step-done input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--green);
+  flex: none;
+}
+.step-done {
+  margin-top: 40px;
+  padding: 8px 14px;
+  min-height: 44px;
+  border: 2px dashed var(--ink-soft);
+  border-radius: var(--wobble);
+}
+.step-done.on {
+  background: var(--green-soft);
+  border-style: solid;
+  border-color: var(--ink);
+}
+.step-done + .page-nav {
+  margin-top: 20px;
+}
+
+/* ---- phone: tap targets and figure sizes ---- */
+@media (max-width: 760px) {
+  /* a label that holds a radio button or a check box is a 44px target, and the box itself is larger */
+  label:has(> input[type="radio"]),
+  label:has(> input[type="checkbox"]) {
+    min-height: 44px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    align-items: center;
+  }
+  label > input[type="radio"],
+  label > input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+    flex: none;
+  }
+  .perm-opt {
+    align-items: center;
+  }
+  .perm-opt input {
+    margin-top: 0;
+  }
+  .learned-box {
+    padding: 6px 10px 6px 0;
+  }
+  .learned-box input {
+    width: 24px;
+    height: 24px;
+  }
+  /* a whole row of the step list opens its page */
+  .step-list > li > h3 > a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+  .step-list > li:has(> h3 > a) {
+    padding-bottom: 18px;
+  }
+  /* small text links in headers and tables of contents */
+  .crumbs a,
+  .footer a {
+    display: inline-block;
+    padding: 12px 6px;
+    margin: -12px -6px;
+  }
+  .toc a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .btn,
+  .icon-btn,
+  .chip {
+    min-height: 44px;
+  }
+  /* orientation pictures of the 2-look page and other cards that lead with a picture */
+  [id^="orient-"] > svg {
+    width: 150px;
+    height: auto;
+    max-width: 100%;
+  }
 }

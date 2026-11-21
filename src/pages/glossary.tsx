@@ -1,3 +1,4 @@
+import { WithToc } from "../components/toc";
 import { TRICKS } from "../data/fingertricks";
 import { applyAlg, solvedState } from "../../shared/cube";
 import { CubeIso } from "../components/cube-iso";
@@ -16,34 +17,36 @@ const moves = (): { m: string; text: string }[] => [
 ];
 
 const terms = (): [string, string][] => [
+  [tr("Tên vị trí (DL, UF, DFL…)", "Position names (DL, UF, DFL…)"), tr("Mỗi chữ cái là một mặt: U trên, D dưới, L trái, R phải, F trước, B sau. Hai chữ là một cạnh nằm giữa hai mặt đó (DL là cạnh giữa mặt dưới và mặt trái). Ba chữ là một góc (DFL là góc giữa mặt dưới, mặt trước và mặt trái).", "Each letter is a face: U up, D down, L left, R right, F front, B back. Two letters name an edge between those faces (DL is the edge between the down and left faces). Three letters name a corner (DFL is the corner between the down, front and left faces).")],
   [tr("Khối 1×2×3 (block)", "1×2×3 block"), tr("Cụm năm mảnh cạnh–góc cùng tâm xếp thành một khối chữ nhật rộng 1, cao 2, dài 3. Roux dựng hai khối như vậy ở hai bên trái và phải.", "A group of five edge and corner pieces plus a centre, forming a box 1 wide, 2 high and 3 long. Roux builds two such blocks, one on the left and one on the right.")],
-  [tr("FB (khối đầu, First Block)", "FB (first block)"), tr("Khối 1×2×3 bên trái: cạnh DL, FL, BL, hai góc DFL, DBL và tâm trái.", "The 1×2×3 block on the left: the edges DL, FL and BL, the two corners DFL and DBL, and the left centre.")],
-  [tr("SB (khối thứ hai, Second Block)", "SB (second block)"), tr("Khối 1×2×3 bên phải, dựng sau khi khối trái đã xong mà không phá nó.", "The 1×2×3 block on the right, built after the left block is done, without breaking it.")],
-  ["CMLL", tr("Đưa bốn góc tầng trên về đúng chỗ, đúng hướng, mặc kệ cạnh. 42 trường hợp (không tính đã giải).", "Put the four top-layer corners in the right place with the right orientation, ignoring the edges. 42 cases (not counting solved).")],
+  [tr("Khối đầu (FB, First Block)", "First block (FB)"), tr("Khối 1×2×3 bên trái: cạnh DL, FL, BL, hai góc DFL, DBL và tâm trái. Đây là Bước 1.", "The 1×2×3 block on the left: the edges DL, FL and BL, the two corners DFL and DBL, and the left centre. This is Step 1.")],
+  [tr("Khối thứ hai (SB, Second Block)", "Second block (SB)"), tr("Khối 1×2×3 bên phải, dựng sau khi khối trái đã xong mà không phá nó. Đây là Bước 2.", "The 1×2×3 block on the right, built after the left block is done, without breaking it. This is Step 2.")],
+  ["CMLL", tr("Đưa bốn góc tầng trên về đúng chỗ, đúng hướng, mặc kệ cạnh. Có 42 trường hợp (không tính trường hợp đã giải). Đây là Bước 3 (dạng 2-look) hoặc Nâng cao A (đủ 42 case).", "Put the four top-layer corners in the right place with the right orientation, ignoring the edges. There are 42 cases (not counting the solved one). This is Step 3 (2-look form) or Advanced A (all 42 cases).")],
+  [tr("Nhóm case", "Case group"), tr("Các case CMLL có chung hình dạng của bốn góc, ví dụ nhóm Sune hay nhóm Đã đúng hướng. Trong một nhóm, các case chỉ khác nhau ở chỗ các góc đứng.", "CMLL cases that share the same twist pattern of the four corners, for example the Sune group or the all-oriented group. Inside one group the cases differ only in where the corners sit.")],
   ["2-look CMLL", tr("Giải bốn góc bằng hai lượt: xoay hướng rồi đổi chỗ, tổng cộng chín thuật toán.", "Solve the four corners in two looks: orient them, then permute them, nine algorithms in total.")],
-  ["LSE", tr("Last Six Edges: giải sáu cạnh cuối và các tâm lát giữa chỉ bằng M và U.", "Last Six Edges: solve the last six edges and the middle-slice centres using only M and U.")],
-  ["EO (4a)", tr("Edge Orientation: lật các cạnh để cả sáu cạnh đều đúng hướng.", "Edge Orientation: flip the edges so that all six edges are oriented correctly.")],
-  ["UL/UR (4b)", tr("Đưa hai cạnh có màu trái và phải về đúng vị trí UL và UR.", "Bring the two edges with the left and right colours to the UL and UR positions.")],
+  [tr("LSE (Last Six Edges, sáu cạnh cuối)", "LSE (Last Six Edges)"), tr("Giải sáu cạnh cuối và các tâm lát giữa chỉ bằng M và U. Đây là Bước 4.", "Solve the last six edges and the middle-slice centres using only M and U. This is Step 4.")],
+  [tr("EO (Edge Orientation, hướng cạnh)", "EO (Edge Orientation)"), tr("Lật các cạnh cho cả sáu cạnh đều đúng hướng, tức là không còn cạnh xấu nào. Đây là phần đầu của LSE.", "Flip the edges so that all six are oriented correctly, which means no bad edge is left. This is the first part of LSE.")],
+  [tr("UL/UR", "UL/UR"), tr("Hai cạnh mang màu của tâm trái và tâm phải. Cần đưa chúng về đúng hai vị trí UL (trên–trái) và UR (trên–phải) trước khi xếp bốn cạnh còn lại.", "The two edges that carry the colours of the left and right centres. They must be brought to the UL (up–left) and UR (up–right) positions before the other four edges are arranged.")],
   ["4c (L4E)", tr("Xếp nốt bốn cạnh còn lại (UF, UB, DF, DB) bằng M và U2.", "Finish the last four edges (UF, UB, DF, DB) with M and U2.")],
-  ["EOLR", tr("Gộp bước EO và UL/UR thành một thuật toán.", "Merge the EO and UL/UR steps into one algorithm.")],
+  ["EOLR", tr("Gộp bước EO và bước UL/UR thành một thuật toán.", "Merge the EO step and the UL/UR step into one algorithm.")],
   ["L6E", tr("Giải cả sáu cạnh cuối trong một mạch.", "Solve all six last edges in one go.")],
-  ["AUF", tr("Adjust U Face: nước U xoay tầng trên để căn chỉnh trước hoặc sau một thuật toán.", "Adjust U Face: a U move that turns the top layer to line it up before or after an algorithm.")],
-  [tr("Cạnh xấu (bad edge)", "Bad edge"), tr("Cạnh có sticker màu mặt trên/dưới nằm ở mặt bên thay vì mặt trên/dưới (khi tâm thẳng hàng).", "An edge whose top/bottom-colour sticker sits on a side face instead of the top/bottom face (when the centres are aligned).")],
-  [tr("Đèn pha (headlights)", "Headlights"), tr("Hai sticker cạnh nhau, cùng màu, trên cùng một mặt bên của tầng trên.", "Two neighbouring stickers of the same colour on the same side face of the top layer.")],
+  [tr("AUF (Adjust U Face, chỉnh mặt trên)", "AUF (Adjust U Face)"), tr("Nước quay tầng trên (U, U' hoặc U2) để căn cho thẳng hàng trước hoặc sau một thuật toán. Trên trang này nó được viết nét chấm cạnh thuật toán: chỉ là bước chỉnh, không dùng để nhận ra case.", "A turn of the top layer (U, U' or U2) to line things up before or after an algorithm. On this site it is written dotted next to the algorithm: only an adjustment, not used to recognise the case.")],
+  [tr("Cạnh xấu (bad edge)", "Bad edge"), tr("Cạnh có sticker mang màu của tâm trên hoặc tâm dưới (hai màu đối nhau) nằm ở mặt bên thay vì ở mặt trên hoặc mặt dưới, khi các tâm lát giữa đang thẳng hàng. Định nghĩa này dựa vào tâm của chính cube bạn, nên đúng với mọi bộ màu.", "An edge with a sticker in the colour of the top centre or the bottom centre (the two opposite colours) sitting on a side face instead of the top or bottom face, when the middle-slice centres are lined up. This is based on the centres of your own cube, so it holds for every colour scheme.")],
+  [tr("Đèn pha (headlights)", "Headlights"), tr("Hai sticker nằm cạnh nhau, cùng màu, trên cùng một mặt bên của tầng trên. Nhìn từ bên cạnh chúng giống hai đèn pha ô tô.", "Two neighbouring stickers of the same colour on the same side face of the top layer. Seen from the side they look like the two headlights of a car.")],
   [tr("Lát giữa (M slice)", "Middle slice (M slice)"), tr("Hàng giữa giữa mặt trái và mặt phải, gồm bốn tâm lát giữa và bốn cạnh UF, UB, DF, DB.", "The middle layer between the left and right faces, holding four middle-slice centres and the four edges UF, UB, DF, DB.")],
   [tr("Nhìn trước (lookahead)", "Lookahead"), tr("Kỹ năng nhận ra bước kế tiếp trong khi tay còn đang làm bước hiện tại, để không bị khựng.", "The skill of spotting the next step while your hands are still doing the current one, so you do not pause.")],
-  ["TPS", tr("Turns Per Second: số nước mỗi giây.", "Turns Per Second: the number of moves per second.")],
+  [tr("TPS (Turns Per Second)", "TPS (Turns Per Second)"), tr("Số nước quay mỗi giây.", "The number of turns per second.")],
 ];
 
 export function GlossaryPage() {
   return (
-    <>
+    <WithToc items={[{ id: "ky-hieu", label: tr("Cách đọc ký hiệu", "Reading the notation") }, { id: "luot-tay", label: tr("Lướt tay", "Finger tricks") }, { id: "thuat-ngu", label: tr("Thuật ngữ", "Glossary") }]}>
       <PageHead
-        title={tr("Ký hiệu và thuật ngữ", "Notation and glossary")}
+        title={tr("Chuẩn bị: ký hiệu và thuật ngữ", "Preparation: notation and glossary")}
         crumbs={<a href={href("/")}>{tr("Trang chủ", "Home")}</a>}
-        lead={tr("Cách đọc thuật toán, và các từ bạn sẽ gặp khi học Roux.", "How to read algorithms, and the words you will meet while learning Roux.")}
+        lead={tr("Đọc trang này trước Bước 1 (khoảng hai phút phần ký hiệu). Phần thuật ngữ ở cuối để tra khi gặp từ lạ.", "Read this page before Step 1 (about two minutes for the notation part). The glossary at the end is for looking up a word when you meet it.")}
       />
-      <h2>{tr("Cách đọc ký hiệu", "How to read the notation")}</h2>
+      <h2 id="ky-hieu">{tr("Cách đọc ký hiệu", "How to read the notation")}</h2>
       <ul>
         <li>
           {tr(
@@ -174,7 +177,7 @@ export function GlossaryPage() {
         </p>
       </Callout>
 
-      <h2>{tr("Thuật ngữ", "Glossary")}</h2>
+      <h2 id="thuat-ngu">{tr("Thuật ngữ", "Glossary")}</h2>
       <div className="table-scroll">
         <table className="tbl">
           <tbody>
@@ -187,6 +190,6 @@ export function GlossaryPage() {
           </tbody>
         </table>
       </div>
-    </>
+    </WithToc>
   );
 }

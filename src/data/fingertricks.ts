@@ -111,6 +111,25 @@ export function handNote(alg: string): string {
   return parts.join(" · ");
 }
 
+/**
+ * "Gợi ý cho tay": read off the move set of an algorithm, so options can be compared at a glance. R and U alone need no change of
+ * hand (the right hand keeps its grip, the right index finger flicks U); every other face is named with who turns it, taken
+ * from TRICKS above. It says nothing about speed.
+ */
+export function handTags(alg: string): string[] {
+  const faces = new Set(alg.split(" ").filter(Boolean).map((t) => t[0]));
+  const tags: string[] = [];
+  if ([...faces].every((f) => f === "R" || f === "U")) return [tr("không đổi tay (chỉ R và U)", "no regrip (only R and U)")];
+  if (faces.has("F")) tags.push(tr("có F (ngón phải đẩy)", "has F (right fingers push)"));
+  if (faces.has("L")) tags.push(tr("có L (dùng tay trái)", "has L (left hand)"));
+  if (faces.has("D")) tags.push(tr("có D (ngón áp út kéo)", "has D (ring finger pulls)"));
+  if (faces.has("B")) tags.push(tr("có B (hay phải xoay cả khối)", "has B (often means turning the whole cube)"));
+  if (faces.has("M")) tags.push(tr("có M (ngón áp út)", "has M (ring finger)"));
+  if (faces.has("r")) tags.push(tr("có r (cổ tay phải ôm cả lát giữa)", "has r (right wrist takes the middle slice along)"));
+  if ([...faces].some((f) => "xyz".includes(f))) tags.push(tr("có xoay cả khối", "turns the whole cube"));
+  return tags;
+}
+
 // ---------------------------------------------------------------------------------------------
 // John Mark's finger code (the DeeDubb notation, see DEEDUBB) turned into plain words.
 // Upper case = right hand, lower case = left hand; T thumb, I index, M middle, R ring, P pinkie, W wrist.

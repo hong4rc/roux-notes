@@ -1,9 +1,9 @@
 // Practice scrambles. Every scramble is meant to be done on a SOLVED cube, held the usual way, and leaves the cube exactly at the start of a step.
 import { applyAlg, invertAlg, parseAlg, solvedState, type State } from "../../shared/cube";
-import { badEdges, buildSpace, centresAligned, cornersAligned, eoDone, scrambleTo, ulurDone, type Space } from "../../shared/lse-space";
+import { badEdges, buildSpace, centresAligned, cornersAligned, distToGoal, eoDone, lookupState, pathFrom, scrambleTo, ulurDone, type Dist, type Space } from "../../shared/lse-space";
 import { CMLL_CASES, fullAlg, type CmllCase } from "../data/cmll";
 
-export type StepKind = "full" | "second-block" | "cmll" | "lse" | "eo" | "ulur" | "l4e";
+export type StepKind = "full" | "first-block" | "second-block" | "cmll" | "lse" | "eo" | "ulur" | "l4e";
 
 const pick = <T>(a: readonly T[]): T => a[Math.floor(Math.random() * a.length)];
 const SUFFIX = ["", "'", "2"];
@@ -80,6 +80,7 @@ export function cmllScramble(): string {
 export async function makeScramble(kind: StepKind): Promise<string> {
   switch (kind) {
     case "full":
+    case "first-block": // a fully mixed cube too: the learner builds the first block and stops
       return wcaScramble();
     case "second-block":
       return randomSecondBlockScramble();
@@ -105,3 +106,19 @@ export function caseScrambleOf(c: CmllCase): string {
 }
 
 export const stateOfScramble = (scramble: string): State => applyAlg(solvedState(), scramble);
+
+const goalDist = new Map<"eo" | "ulur", Dist>();
+/**
+ * The cube as it looks when the learner has finished an LSE step that started at `scramble`:
+ * EO leaves every edge oriented, UL/UR leaves those two edges home, the last step (and the whole of LSE) leaves a solved cube.
+ */
+export function lseFinishedState(kind: "lse" | "eo" | "ulur" | "l4e", scramble: string): State {
+  if (kind === "lse" || kind === "l4e") return solvedState();
+  const sp = lseSpace();
+  let d = goalDist.get(kind);
+  if (!d) goalDist.set(kind, (d = distToGoal(sp, kind === "eo" ? eoDone : ulurDone)));
+  const start = stateOfScramble(scramble);
+  const i = lookupState(sp, start);
+  if (i === undefined) return start;
+  return applyAlg(start, pathFrom(sp, d, i));
+}

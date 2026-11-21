@@ -3,8 +3,9 @@ import { stickerIndex, stateKey, type State, type Vec } from "../../shared/cube"
 import { tr } from "../lib/i18n";
 import { INK } from "../lib/palette";
 import { useSettings } from "../lib/store";
-import { curvePaths, linePaths, polygonPaths } from "../lib/rough-util";
-import { drawSticker, PathList, type StickerShape } from "./sticker-shapes";
+import { curvePaths, linePaths, polygonPaths, rectPaths } from "../lib/rough-util";
+import { sameColorFaces } from "../data/cmll";
+import { drawSticker, PAIR_OUTLINE, PathList, type StickerShape } from "./sticker-shapes";
 
 const U = 44; // pixels per cell
 const GAP = 0.07;
@@ -27,6 +28,13 @@ export interface LLTopProps {
   arrows?: TopArrow[];
   /** draw only stickers of this colour id (everything else becomes a grey placeholder) */
   onlyColor?: number;
+  /**
+   * colour-free picture: stickers of the top colour keep their colour, every other sticker is plain grey, so the picture
+   * cannot be matched by shade. Pair it with `outlinePairs` to keep the side-face clues.
+   */
+  neutral?: boolean;
+  /** draw one shared outline around the two corner stickers of a side face when they show the same colour (headlights, bar) */
+  outlinePairs?: boolean;
   width?: number;
   seed?: number;
   title?: string;
@@ -44,7 +52,7 @@ function quad(x0: number, y0: number, x1: number, y1: number): [number, number][
   ].map(([x, y]) => [x * U, y * U] as [number, number]);
 }
 
-function LLTopBase({ state, show = "corners", mark, arrows, onlyColor, width = 160, seed = 3, title, variant }: LLTopProps) {
+function LLTopBase({ state, show = "corners", mark, arrows, onlyColor, neutral, outlinePairs, width = 160, seed = 3, title, variant }: LLTopProps) {
   const { top: schemeTop, front: schemeFront } = useSettings();
   const stKey = stateKey(state);
   const shapes = useMemo(() => {
@@ -66,6 +74,7 @@ function LLTopBase({ state, show = "corners", mark, arrows, onlyColor, width = 1
         out.push({
           points: quad(x0, y0, x1, y1),
           colorId: visible(x, z) && (onlyColor === undefined || state[top] === onlyColor) ? state[top] : 9,
+          neutral: neutral && state[top] !== 0,
           marked: mark?.(top),
           seed: seed * 53 + top,
         });
@@ -80,6 +89,7 @@ function LLTopBase({ state, show = "corners", mark, arrows, onlyColor, width = 1
           out.push({
             points: quad(s.rect[0], s.rect[1], s.rect[2], s.rect[3]).map(([px, py]) => [px, py] as [number, number]),
             colorId: visible(x, z) && (onlyColor === undefined || state[idx] === onlyColor) ? state[idx] : 9,
+            neutral: neutral && state[idx] !== 0,
             marked: mark?.(idx),
             seed: seed * 71 + idx,
           });
@@ -88,8 +98,31 @@ function LLTopBase({ state, show = "corners", mark, arrows, onlyColor, width = 1
     }
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stKey, show, seed, variant, onlyColor, schemeTop, schemeFront]);
+  }, [stKey, show, seed, variant, onlyColor, neutral, schemeTop, schemeFront]);
   const drawn = useMemo(() => shapes.map((sh) => drawSticker(sh)), [shapes]);
+
+  // one rough rectangle around the whole strip of a side face whose two corner stickers match
+  const pairPaths = useMemo(() => {
+    if (!outlinePairs) return [];
+    const P = 0.05;
+    const strip: Record<string, [number, number, number, number]> = {
+      F: [0, 3 + GAP, 3, 3 + GAP + T],
+      B: [0, -GAP - T, 3, -GAP],
+      R: [3 + GAP, 0, 3 + GAP + T, 3],
+      L: [-GAP - T, 0, -GAP, 3],
+    };
+    return sameColorFaces(state).flatMap((p, k) => {
+      const [x0, y0, x1, y1] = strip[p.face];
+      return rectPaths((x0 - P) * U, (y0 - P) * U, (x1 - x0 + 2 * P) * U, (y1 - y0 + 2 * P) * U, {
+        seed: seed + 90 + k,
+        roughness: 0.6,
+        stroke: PAIR_OUTLINE,
+        strokeWidth: 2.8,
+        disableMultiStroke: true,
+      });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stKey, outlinePairs, seed]);
 
   const arrowPaths = useMemo(() => {
     return (arrows ?? []).flatMap((a, k) => {
@@ -147,6 +180,7 @@ function LLTopBase({ state, show = "corners", mark, arrows, onlyColor, width = 1
       {shapes.map((_, i) => (
         <PathList key={i} prefix={`t${i}`} paths={drawn[i]} />
       ))}
+      <PathList prefix="p" paths={pairPaths} />
       <PathList prefix="a" paths={arrowPaths} />
     </svg>
   );

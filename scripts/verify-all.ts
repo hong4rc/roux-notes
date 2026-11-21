@@ -411,6 +411,11 @@ ok(ORIENT_ALGS.every((a) => checkCmll(a.alg).ok), "orient algs preserve blocks")
   const half = moveTurn(parseAlg("R2")[0]).quarterTurns, halfBack = moveTurn(parseAlg("R2'")[0]).quarterTurns;
   ok(bad.length === 0 && half === -halfBack && half !== 0, `turning picture: ${names.length} moves, each sticker ends the on-screen turn where the move puts it; R2' turns the other way from R2`);
 }
+for (const script of ["scripts/test-recognize.ts", "scripts/test-lse-trace.ts", "scripts/test-block-examples.ts", "scripts/test-practice.ts"]) {
+  const r = Bun.spawnSync(["bun", "run", script]);
+  if (r.exitCode !== 0) console.log(r.stdout.toString().split("\n").filter((l) => l.startsWith("FAIL")).slice(0, 5).join("\n"));
+  ok(r.exitCode === 0, `${script} passes`);
+}
 void caseOfAlg; void GROUPS;
 console.log(fail ? `\n${fail} FAILED` : "\nall checks passed");
 process.exit(fail ? 1 : 0);

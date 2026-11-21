@@ -3,6 +3,7 @@ import { href, jump, useRoute } from "../lib/router";
 import { setLang, toggleTheme, useSettings } from "../lib/store";
 import { tr } from "../lib/i18n";
 import { PageNav } from "./page-nav";
+import { SchemeAsk, SchemeMenu } from "./scheme-picker";
 import { Icon } from "./icons";
 
 const links = (): { to: string; label: string; match: string }[] => [
@@ -40,17 +41,7 @@ export function Layout({ children }: { children: ReactNode }) {
           <a className="brand" href={href("/")}>
             <Logo /> Roux Notes
           </a>
-          <button className="icon-btn menu-btn" aria-expanded={open} onClick={() => setOpen(!open)}>
-            <Icon name={open ? "cross" : "menu"} /> {open ? tr("Đóng", "Close") : "Menu"}
-          </button>
-          <div className={`nav-links ${open ? "open" : ""}`}>
-            {links().map((l) => (
-              <a key={l.to} href={href(l.to)} aria-current={first === l.match ? "page" : undefined}>
-                {l.label}
-              </a>
-            ))}
-          </div>
-          <div className={`nav-tools ${open ? "open" : ""}`}>
+          <div className="nav-quick">
             <div className="lang-switch" role="group" aria-label={tr("Ngôn ngữ", "Language")}>
               <button className="icon-btn" lang="vi" aria-pressed={lang === "vi"} onClick={() => setLang("vi")} title="Tiếng Việt">
                 VI
@@ -59,6 +50,19 @@ export function Layout({ children }: { children: ReactNode }) {
                 EN
               </button>
             </div>
+            <SchemeMenu />
+            <button className="icon-btn menu-btn" aria-expanded={open} onClick={() => setOpen(!open)}>
+              <Icon name={open ? "cross" : "menu"} /> {open ? tr("Đóng", "Close") : "Menu"}
+            </button>
+          </div>
+          <div className={`nav-links ${open ? "open" : ""}`}>
+            {links().map((l) => (
+              <a key={l.to} href={href(l.to)} aria-current={first === l.match ? "page" : undefined}>
+                {l.label}
+              </a>
+            ))}
+          </div>
+          <div className={`nav-tools ${open ? "open" : ""}`}>
             <button
               type="button"
               role="switch"
@@ -73,6 +77,7 @@ export function Layout({ children }: { children: ReactNode }) {
           </div>
         </div>
       </nav>
+      <SchemeAsk />
       <main id="main" className="wrap">
         {children}
         <PageNav />

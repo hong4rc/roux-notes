@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AlgStepper } from "../components/alg-stepper";
 import { CaseTop } from "../components/case-views";
 import { LLTop } from "../components/ll-top";
@@ -18,6 +18,7 @@ import {
 import { planTwoLook } from "../data/two-look-plan";
 import { colorName, tr, useLang } from "../lib/i18n";
 import { href } from "../lib/router";
+import { arrangementCaption } from "../lib/recognize";
 import { useSettings } from "../lib/store";
 import { signatureKey, uCornerSignature } from "../../shared/roux";
 
@@ -64,7 +65,13 @@ export function Finder() {
   const [o, setO] = useState<number[]>([0, 0, 0, 0]);
   const [hl, setHl] = useState<Headlight>("any");
   const [picked, setPicked] = useState<number | null>(null);
+  const [real, setReal] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
+  const pickerRef = useRef<HTMLDivElement>(null);
+  // the colour picker is open from the start: a learner with another colour scheme must see it before anything else
+  useEffect(() => {
+    pickerRef.current?.querySelector("details")?.setAttribute("open", "");
+  }, []);
 
   const candidates = useMemo(() => {
     const list = ALL_CORNER_STATES.filter((s) => orientationOf(s.state).join() === o.join());
@@ -96,19 +103,21 @@ export function Finder() {
           "Follow three steps: tap the top-colour stickers, choose the headlights, then pick the picture that looks like your cube.",
         )}
       />
-      <SchemePicker />
+      <div ref={pickerRef}>
+        <SchemePicker />
+      </div>
 
       <h2>{tr("Bước 1. Sticker màu mặt trên nằm ở đâu?", "Step 1. Where are the top-colour stickers?")}</h2>
       <p>
         {tr(
           <>
-            Cầm cube với <strong>mặt trước hướng về phía bạn</strong>. Ở mỗi góc của tầng trên có đúng một sticker màu <strong>{colorName(top)}</strong> (màu tâm
-            mặt trên). Chạm vào đúng vị trí sticker đó: trên mặt trên hoặc ở một trong hai mặt bên. Ban đầu cả bốn góc đang để “vàng lên trên”.
+            Cầm cube với <strong>mặt trước hướng về phía bạn</strong>. Ở mỗi góc của tầng trên có đúng một sticker mang <strong>màu mặt trên</strong> (màu của tâm
+            mặt trên, trong bảng chọn màu đang là {colorName(top)}). Chạm vào đúng vị trí sticker đó: trên mặt trên hoặc ở một trong hai mặt bên. Ban đầu cả bốn góc đang để “màu mặt trên nằm trên”.
           </>,
           <>
-            Hold the cube with the <strong>front face towards you</strong>. Each corner of the top layer has exactly one <strong>{colorName(top)}</strong> sticker (the
-            colour of the top centre). Tap the place where that sticker is: on the top face or on one of the two side faces. At first all four corners are set to
-            “yellow on top”.
+            Hold the cube with the <strong>front face towards you</strong>. Each corner of the top layer has exactly one sticker with the <strong>top colour</strong> (the
+            colour of the top centre, currently {colorName(top)} in the colour picker). Tap the place where that sticker is: on the top face or on one of the two side faces. At first all four corners are set to
+            “top colour on top”.
           </>,
         )}
       </p>
@@ -170,8 +179,8 @@ export function Finder() {
           <Why title={tr("Vì sao chỉ cần chạm bốn sticker?", "Why do you only need to tap four stickers?")}>
             <p>
               {tr(
-                `Hướng của một góc chỉ có ba khả năng: sticker ${colorName(top)} nằm trên, hoặc nằm ở một trong hai mặt bên. Bốn góc cho ba lựa chọn mỗi góc, nhưng trên cube thật chỉ 27 trong 81 tổ hợp là có thể (tổng độ xoay phải chia hết cho 3). Biết hướng là đã loại gần hết các case; phần còn lại chỉ là hỏi xem màu bên hông khớp thế nào.`,
-                `A corner can be oriented in only three ways: its ${colorName(top)} sticker is on top, or on one of the two side faces. Four corners with three choices each give 81 combinations, but on a real cube only 27 of them are possible (the total twist must be divisible by 3). Knowing the orientation already rules out almost every case; what is left is just asking how the side colours match.`,
+                `Hướng của một góc chỉ có ba khả năng: sticker màu mặt trên nằm trên, hoặc nằm ở một trong hai mặt bên. Bốn góc cho ba lựa chọn mỗi góc, nhưng trên cube thật chỉ 27 trong 81 tổ hợp là có thể (tổng độ xoay phải chia hết cho 3). Biết hướng là đã loại gần hết các case; phần còn lại chỉ là hỏi xem màu bên hông khớp thế nào.`,
+                `A corner can be oriented in only three ways: its top-colour sticker is on top, or on one of the two side faces. Four corners with three choices each give 81 combinations, but on a real cube only 27 of them are possible (the total twist must be divisible by 3). Knowing the orientation already rules out almost every case; what is left is just asking how the side colours match.`,
               )}
             </p>
           </Why>
@@ -184,11 +193,11 @@ export function Finder() {
           <p>
             {tr(
               <>
-                Đèn pha là hai sticker <strong>nằm cạnh nhau, cùng một màu, trên cùng một mặt bên</strong> (không tính màu {colorName(top)}).
+                Đèn pha là hai sticker <strong>nằm cạnh nhau, cùng một màu, trên cùng một mặt bên</strong> (không tính màu mặt trên). Chỉ cần thấy hai sticker giống nhau, không cần biết đó là màu gì.
               </>,
               <>
                 Headlights are two stickers that <strong>sit side by side, have the same colour, and are on the same side face</strong> (not counting the{" "}
-                {colorName(top)} colour).
+                top colour). You only need to see that the two match; which colour it is does not matter.
               </>,
             )}
           </p>
@@ -206,13 +215,22 @@ export function Finder() {
           <Why title={tr("Vì sao đèn pha lại hữu ích?", "Why are headlights useful?")}>
             <p>
               {tr(
-                `Với cùng hình sticker ${colorName(top)}, vẫn còn tới 24 cách xếp các góc. Đèn pha là dấu hiệu nhìn nhanh nhất để chia 24 cách đó thành các nhóm nhỏ, vì nó chỉ xuất hiện khi hai góc kề nhau đã đứng đúng cặp với nhau.`,
-                `With the same ${colorName(top)} sticker picture, there are still up to 24 ways to arrange the corners. Headlights are the fastest sign to split those 24 ways into small groups, because they only appear when two neighbouring corners already form the right pair.`,
+                `Với cùng hình sticker màu mặt trên, vẫn còn tới 24 cách xếp các góc. Đèn pha là dấu hiệu nhìn nhanh nhất để chia 24 cách đó thành các nhóm nhỏ, vì nó chỉ xuất hiện khi hai góc kề nhau đã đứng đúng cặp với nhau.`,
+                `With the same top-colour sticker picture, there are still up to 24 ways to arrange the corners. Headlights are the fastest sign to split those 24 ways into small groups, because they only appear when two neighbouring corners already form the right pair.`,
               )}
             </p>
           </Why>
 
           <h2>{tr("Bước 3. Chọn hình giống cube của bạn", "Step 3. Pick the picture that looks like your cube")}</h2>
+          <p>
+            {tr(
+              "Mỗi hình có một dòng chữ mô tả chỗ đứng của bốn góc, tính theo các tâm của cube bạn (một góc đúng chỗ khi hai màu bên hông của nó khớp hai tâm kề nó). Sticker xám nghĩa là “màu nào cũng được”; viền cam nối hai sticker cùng màu (đèn pha). Hai hình khác nhau luôn có dòng chữ khác nhau.",
+              "Each picture has a line of words describing where the four corners stand, measured against the centres of your cube (a corner is in place when its two side colours match the two centres next to it). A grey sticker means “any colour”; an orange outline joins two stickers of the same colour (headlights). Two different pictures always have different words.",
+            )}
+          </p>
+          <label className="small" style={{ display: "inline-block", marginBottom: 8 }}>
+            <input type="checkbox" checked={real} onChange={(e) => setReal(e.target.checked)} /> {tr("Hiện màu thật", "Show real colours")}
+          </label>
           {filtered.length === 0 ? (
             <p className="muted">
               {tr("Không hình nào khớp với lựa chọn đèn pha này. Thử chọn “Chưa rõ”.", "No picture matches this headlight choice. Try “Not sure”.")}
@@ -233,8 +251,9 @@ export function Finder() {
                     }}
                     style={active ? { background: "var(--hi)", outline: "3px solid var(--accent)" } : undefined}
                   >
-                    <CaseTop state={s.state} width={130} />
-                    <span className="small">{c ? `${GROUPS[c.group].label} · ${c.sourceName}` : tr("Đã xong (chỉ xoay U)", "Solved (only turn U)")}</span>
+                    <CaseTop state={s.state} width={130} neutral={!real} outlinePairs={!real} />
+                    <span className="small">{arrangementCaption(s.state)}</span>
+                    <span className="small muted">{c ? `${GROUPS[c.group].label} · ${c.sourceName}` : tr("Đã xong (chỉ xoay U)", "Solved (only turn U)")}</span>
                   </button>
                 );
               })}

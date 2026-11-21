@@ -1,3 +1,4 @@
+import { WithToc } from "../components/toc";
 import { ALL_CENTRES, CMLL_PIECES, FB_PIECES, LSE_PIECES, PiecesIso, SB_PIECES } from "../components/pieces-iso";
 import { Callout, PageHead, Why } from "../components/ui";
 import stats from "../data/cmll-stats.json";
@@ -7,43 +8,43 @@ import { href } from "../lib/router";
 
 export function AboutPage() {
   return (
-    <>
+    <WithToc items={[{ id: "bon-buoc", label: tr("Bốn bước", "Four steps") }, { id: "ai-tao", label: tr("Ai tạo ra Roux", "Who created Roux") }, { id: "so-cfop", label: tr("So với CFOP", "Versus CFOP") }, { id: "uu-nhuoc", label: tr("Điểm mạnh, điểm yếu", "Strengths, weaknesses") }, { id: "ai-dung", label: tr("Ai dùng Roux", "Who uses Roux") }, { id: "hoi-nhanh", label: tr("Hỏi nhanh", "Quick questions") }, { id: "nguon", label: tr("Nguồn", "Sources") }]}>
       <PageHead
         title={tr("Roux là gì?", "What is Roux?")}
         crumbs={<a href={href("/")}>{tr("Trang chủ", "Home")}</a>}
         lead={tr("Một phương pháp giải Rubik 3×3 dựng hai khối ở hai bên, rồi chỉ dùng lát giữa và tầng trên để giải phần còn lại.", "A method for solving the 3×3 Rubik’s Cube that builds two blocks on the sides, then uses only the middle slice and the top layer to solve the rest.")}
       />
 
-      <h2>{tr("Bốn bước", "Four steps")}</h2>
+      <h2 id="bon-buoc">{tr("Bốn bước", "Four steps")}</h2>
       <div className="stage-row">
         <div className="card stage">
           <PiecesIso pieces={[...FB_PIECES, ...ALL_CENTRES]} yaw={1} width={150} title={tr("Khối đầu", "First block")} />
-          <h3>{tr("1. Khối đầu", "1. First block")}</h3>
+          <h3>{tr("Bước 1: Khối đầu", "Step 1: First block")}</h3>
           <p>{tr("1×2×3 bên trái", "1×2×3 on the left")}</p>
         </div>
         <div className="card stage">
           <PiecesIso pieces={[...FB_PIECES, ...SB_PIECES, ...ALL_CENTRES]} width={150} title={tr("Khối thứ hai", "Second block")} />
-          <h3>{tr("2. Khối thứ hai", "2. Second block")}</h3>
+          <h3>{tr("Bước 2: Khối thứ hai", "Step 2: Second block")}</h3>
           <p>{tr("1×2×3 bên phải", "1×2×3 on the right")}</p>
         </div>
         <div className="card stage">
           <PiecesIso pieces={[...FB_PIECES, ...SB_PIECES, ...CMLL_PIECES, ...ALL_CENTRES]} width={150} title="CMLL" />
-          <h3>3. CMLL</h3>
+          <h3>{tr("Bước 3: CMLL", "Step 3: CMLL")}</h3>
           <p>{tr("Bốn góc tầng trên", "The four top-layer corners")}</p>
         </div>
         <div className="card stage">
           <PiecesIso pieces={[...FB_PIECES, ...SB_PIECES, ...CMLL_PIECES, ...LSE_PIECES, ...ALL_CENTRES]} width={150} title="LSE" />
-          <h3>4. LSE</h3>
+          <h3>{tr("Bước 4: LSE", "Step 4: LSE")}</h3>
           <p>{tr("Sáu cạnh, chỉ M và U", "Six edges, only M and U")}</p>
         </div>
       </div>
       <p>
         {tr(
           <>
-            Hai bước đầu làm bằng <strong>trực giác</strong> (không có thuật toán để học thuộc), bước ba dùng thuật toán cho bốn góc, bước bốn dùng hai loại nước đơn giản M và U.
+            Bước 1 và bước 2 làm bằng <strong>trực giác</strong> (không có thuật toán để học thuộc), bước 3 dùng thuật toán cho bốn góc, bước 4 dùng hai loại nước đơn giản M và U. Trước bước 1 có phần <a href={href("/glossary")}>Chuẩn bị: Ký hiệu</a>; sau bước 4 là hai phần nâng cao (Nâng cao A: đủ 42 case CMLL, Nâng cao B: tối ưu).
           </>,
           <>
-            The first two steps are done by <strong>intuition</strong> (no algorithms to memorize), step three uses algorithms for the four corners, and step four uses just two simple kinds of moves, M and U.
+            Steps 1 and 2 are done by <strong>intuition</strong> (no algorithms to memorize), step 3 uses algorithms for the four corners, and step 4 uses just two simple kinds of moves, M and U. Before step 1 comes <a href={href("/glossary")}>Preparation: Notation</a>; after step 4 come two advanced parts (Advanced A: all 42 CMLL cases, Advanced B: optimization).
           </>,
         )}
       </p>
@@ -68,7 +69,7 @@ export function AboutPage() {
         </p>
       </Why>
 
-      <h2>{tr("Ai tạo ra Roux?", "Who created Roux?")}</h2>
+      <h2 id="ai-tao">{tr("Ai tạo ra Roux?", "Who created Roux?")}</h2>
       <ul>
         <li>
           {tr(
@@ -84,8 +85,8 @@ export function AboutPage() {
         </li>
         <li>
           {tr(
-            "Động lực: ông quay lại với Rubik năm 2001, khi đó dùng phương pháp Petrus kèm OCLL và PLL, và muốn có một phương pháp chủ yếu bằng trực giác mà có thể kết thúc chỉ bằng M và U.",
-            "His motivation: he came back to the Rubik’s Cube in 2001, when he was using the Petrus method with OCLL and PLL, and wanted a method that is mostly intuitive and can finish with only M and U.",
+            "Động lực: ông quay lại với Rubik năm 2001, khi đó dùng phương pháp Petrus kèm hai bước cuối OCLL (xoay hướng bốn góc) và PLL (đổi chỗ tầng trên), và muốn có một phương pháp chủ yếu bằng trực giác mà có thể kết thúc chỉ bằng M và U.",
+            "His motivation: he came back to the Rubik’s Cube in 2001, when he was using the Petrus method with OCLL (orient the corners) and PLL (permute the top layer) as the last steps, and wanted a method that is mostly intuitive and can finish with only M and U.",
           )}
         </li>
         <li>
@@ -96,13 +97,13 @@ export function AboutPage() {
         </li>
         <li>
           {tr(
-            "Tên gọi CMLL do ông đề xuất trên trang của mình năm 2005 (theo cubinghistory.com). Sau này cộng đồng (Michael Straughan, Thom Barlow, Iuri Grangeiro, Kian Mansour…) phát triển thêm nhiều biến thể LSE và nhận dạng như EOLR.",
-            "The name CMLL was proposed by him on his own site in 2005 (according to cubinghistory.com). Later the community (Michael Straughan, Thom Barlow, Iuri Grangeiro, Kian Mansour…) developed many more LSE variants and recognition methods such as EOLR.",
+            "Tên gọi CMLL do ông đề xuất trên trang của mình năm 2005 (theo cubinghistory.com). Sau này cộng đồng (Michael Straughan, Thom Barlow, Iuri Grangeiro, Kian Mansour…) phát triển thêm nhiều biến thể LSE và nhận dạng như EOLR (giải hướng cạnh và hai cạnh bên cùng lúc).",
+            "The name CMLL was proposed by him on his own site in 2005 (according to cubinghistory.com). Later the community (Michael Straughan, Thom Barlow, Iuri Grangeiro, Kian Mansour…) developed many more LSE variants and recognition methods such as EOLR (solving edge orientation and the two side edges together).",
           )}
         </li>
       </ul>
 
-      <h2>{tr("So với CFOP", "Compared with CFOP")}</h2>
+      <h2 id="so-cfop">{tr("So với CFOP", "Compared with CFOP")}</h2>
       <div className="table-scroll">
         <table className="tbl">
           <thead>
@@ -121,7 +122,7 @@ export function AboutPage() {
             <tr>
               <td>{tr("Số thuật toán", "Number of algorithms")}</td>
               <td>{tr("CMLL 42 case (hoặc 9 nếu 2-look), LSE gần như trực giác", "CMLL 42 cases (or 9 with 2-look), LSE almost intuitive")}</td>
-              <td>{tr("OLL 57 + PLL 21 = 78 (cộng F2L trực giác)", "OLL 57 + PLL 21 = 78 (plus intuitive F2L)")}</td>
+              <td>{tr("OLL (xoay hướng tầng trên) 57 + PLL (đổi chỗ tầng trên) 21 = 78, cộng F2L làm bằng trực giác", "OLL (orient the top layer) 57 + PLL (permute the top layer) 21 = 78, plus F2L done by intuition")}</td>
             </tr>
             <tr>
               <td>{tr("Xoay cả khối", "Cube rotations")}</td>
@@ -136,7 +137,7 @@ export function AboutPage() {
             <tr>
               <td>{tr("Điểm khó nhất", "Hardest part")}</td>
               <td>{tr("Nhìn trước, tốc độ M, LSE", "Lookahead, M-move speed, LSE")}</td>
-              <td>{tr("Nhớ nhiều thuật toán, chọn F2L", "Remembering many algorithms, choosing F2L")}</td>
+              <td>{tr("Nhớ nhiều thuật toán, và chọn cách ghép các cặp góc–cạnh ở hai tầng dưới (F2L)", "Remembering many algorithms, and choosing how to pair corners and edges in the bottom two layers (F2L)")}</td>
             </tr>
           </tbody>
         </table>
@@ -162,7 +163,7 @@ export function AboutPage() {
         <li>
           {tr(
             <>
-              LSE: 3 bước <strong>{lse.stats.threeStepAvg}</strong> nước, gộp EO và UL/UR <strong>{lse.stats.twoStepAvg}</strong>, tối ưu một mạch <strong>{lse.stats.optimalAvg}</strong>.
+              LSE: chia ba bước <strong>{lse.stats.threeStepAvg}</strong> nước, gộp EO và UL/UR <strong>{lse.stats.twoStepAvg}</strong>, tối ưu một mạch <strong>{lse.stats.optimalAvg}</strong>.
             </>,
             <>
               LSE: three steps <strong>{lse.stats.threeStepAvg}</strong> moves, EO and UL/UR merged <strong>{lse.stats.twoStepAvg}</strong>, optimal single pass <strong>{lse.stats.optimalAvg}</strong>.
@@ -171,7 +172,7 @@ export function AboutPage() {
         </li>
       </ul>
 
-      <h2>{tr("Tốt hơn ở đâu, chưa tốt ở đâu", "Where it is better, where it is not")}</h2>
+      <h2 id="uu-nhuoc">{tr("Tốt hơn ở đâu, chưa tốt ở đâu", "Where it is better, where it is not")}</h2>
       <div className="grid cols-2">
         <div className="card" style={{ background: "var(--green-soft)" }}>
           <h3 style={{ marginTop: 0 }}>{tr("Điểm mạnh", "Strengths")}</h3>
@@ -201,7 +202,7 @@ export function AboutPage() {
         </p>
       </Callout>
 
-      <h2>{tr("Ai dùng Roux?", "Who uses Roux?")}</h2>
+      <h2 id="ai-dung">{tr("Ai dùng Roux?", "Who uses Roux?")}</h2>
       <ul>
         <li>
           {tr(
@@ -236,7 +237,7 @@ export function AboutPage() {
         )}
       </p>
 
-      <h2>{tr("Hỏi nhanh", "Quick questions")}</h2>
+      <h2 id="hoi-nhanh">{tr("Hỏi nhanh", "Quick questions")}</h2>
       <h3>{tr("Roux có hợp với mình không?", "Is Roux right for me?")}</h3>
       <p>
         {tr(
@@ -259,15 +260,15 @@ export function AboutPage() {
       <p>
         {tr(
           <>
-            Đọc <a href={href("/glossary")}>ký hiệu</a>, rồi làm theo <a href={href("/learn")}>lộ trình từng bước</a>.
+            Đọc <a href={href("/glossary")}>Chuẩn bị: Ký hiệu</a>, rồi làm theo <a href={href("/learn")}>lộ trình từng bước</a>, bắt đầu từ Bước 1: Khối đầu.
           </>,
           <>
-            Read the <a href={href("/glossary")}>notation</a>, then follow the <a href={href("/learn")}>step-by-step path</a>.
+            Read <a href={href("/glossary")}>Preparation: Notation</a>, then follow the <a href={href("/learn")}>step-by-step path</a>, starting with Step 1: First block.
           </>,
         )}
       </p>
 
-      <h2>{tr("Nguồn tham khảo", "Sources")}</h2>
+      <h2 id="nguon">{tr("Nguồn tham khảo", "Sources")}</h2>
       <ul className="small">
         <li>{tr("cubinghistory.com/3x3/Methods/Roux (lịch sử, 2003–2016)", "cubinghistory.com/3x3/Methods/Roux (history, 2003–2016)")}</li>
         <li>{tr("grrroux.free.fr/method/Intro.html (trang của Gilles Roux)", "grrroux.free.fr/method/Intro.html (Gilles Roux’s own site)")}</li>
@@ -276,6 +277,6 @@ export function AboutPage() {
         <li>{tr("cubeskills.com/blog/what-are-the-limits (so sánh tiềm năng tốc độ), speedcubeshop.com (tổng quan Roux)", "cubeskills.com/blog/what-are-the-limits (comparison of speed potential), speedcubeshop.com (overview of Roux)")}</li>
         <li>{tr("WCA, trang kết quả cá nhân (xem 16/11/2026)", "WCA, personal results pages (viewed 16 November 2026)")}</li>
       </ul>
-    </>
+    </WithToc>
   );
 }

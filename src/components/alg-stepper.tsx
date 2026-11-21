@@ -23,9 +23,15 @@ export interface StepperProps {
   doneText?: string;
   /** the caller's own split into steps (number of moves in each, in order), used instead of the automatic one */
   steps?: { moves: number; title: string; what: string }[];
+  /** show only these pieces in colour and grey out the rest (for a block lesson); replaces the CMLL facts below the picture */
+  keep?: string[];
+  /** the sentences under "You are here" for a state, when the CMLL facts do not apply */
+  factsFor?: (state: State) => string[];
+  /** what the picture says before the first move */
+  startText?: string;
 }
 
-export function AlgStepper({ start, alg, pre, post, hideEdges = true, yaw = 0, doneText, steps }: StepperProps) {
+export function AlgStepper({ start, alg, pre, post, hideEdges = true, yaw = 0, doneText, steps, keep, factsFor, startText }: StepperProps) {
   const lang = useLang();
   const tokens: Token[] = useMemo(() => {
     const list: Token[] = [];
@@ -90,6 +96,9 @@ export function AlgStepper({ start, alg, pre, post, hideEdges = true, yaw = 0, d
   const moveList = useMemo(() => tokens.map((t) => t.move), [tokens]);
   const pic = useTurnAnim(states, moveList, k);
   const facts = factsOf(cur);
+  const keepSet = useMemo(() => (keep ? new Set(keep.flatMap((p) => pieceStickers(p))) : null), [keep]);
+  const keepGhost = useMemo(() => (keepSet ? (i: number) => !keepSet.has(i) : undefined), [keepSet]);
+  const factLines = factsFor ? factsFor(cur) : factsSentence(facts);
   const chunkIdx = chunks.findIndex((c) => k > c.from && k <= c.to);
   const active = chunks[chunkIdx];
   const done = k === tokens.length;
@@ -102,13 +111,13 @@ export function AlgStepper({ start, alg, pre, post, hideEdges = true, yaw = 0, d
           anim={pic.anim}
           width={250}
           yaw={yaw}
-          ghost={hideEdges ? ghostEdges : undefined}
-          variant={hideEdges ? "no-edges" : "all"}
+          ghost={keepGhost ?? (hideEdges ? ghostEdges : undefined)}
+          variant={keep ? keep.join() : hideEdges ? "no-edges" : "all"}
           title={tr(`Khối sau ${k} nước`, `Cube after ${k} moves`)}
         />
         <div className="small muted" aria-live="polite">
           {k === 0
-            ? tr("Trạng thái ban đầu của case", "Starting state of the case")
+            ? (startText ?? tr("Trạng thái ban đầu của case", "Starting state of the case"))
             : done
               ? (doneText ?? tr("Xong", "Done"))
               : tr(`Sau nước ${k}/${tokens.length}: ${tokens[k - 1].text}`, `After move ${k}/${tokens.length}: ${tokens[k - 1].text}`)}
@@ -166,7 +175,7 @@ export function AlgStepper({ start, alg, pre, post, hideEdges = true, yaw = 0, d
                 </p>
               )}
               <ul className="small" style={{ margin: 0 }}>
-                {factsSentence(facts).map((s) => (
+                {factLines.map((s) => (
                   <li key={s}>{s}</li>
                 ))}
               </ul>

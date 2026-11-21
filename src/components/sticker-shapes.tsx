@@ -5,12 +5,19 @@ export interface StickerShape {
   points: [number, number][];
   colorId: number; // 0-5 face colour, anything else = ghost
   marked?: boolean;
+  /** drawn as a plain grey sticker: it has a colour, but the picture does not rely on which one */
+  neutral?: boolean;
   seed: number;
 }
 
+/** grey of a sticker whose colour is deliberately not shown; darker than the ghost grey of pieces that are left out */
+export const NEUTRAL_FILL = "#bdb6a6";
+/** outline that joins two same-colour stickers into one pair */
+export const PAIR_OUTLINE = "#e8590c";
+
 export function drawSticker(sh: StickerShape): PathPiece[] {
   const ghost = sh.colorId > 5;
-  const fill = ghost ? GHOST_FILL : colorOfId(sh.colorId);
+  const fill = ghost ? GHOST_FILL : sh.neutral ? NEUTRAL_FILL : colorOfId(sh.colorId);
   return polygonPaths(sh.points, {
     seed: sh.seed,
     roughness: ghost ? 0.7 : 0.8,

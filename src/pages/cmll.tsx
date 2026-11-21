@@ -1,3 +1,8 @@
+import { WithToc } from "../components/toc";
+import { HalfTurnNote, HandDrill, HandTags, RuleFingers } from "../components/finger-hint";
+import { TryThree } from "../components/try-three";
+import { caseLabel, placementPhrase } from "../lib/recognize";
+import { CaseRecognition } from "../components/case-recognition";
 import { useMemo, useState } from "react";
 import { applyAlg, invertAlg, type State } from "../../shared/cube";
 import { caseScrambleOf, tidy } from "../lib/scramble";
@@ -12,12 +17,10 @@ import {
   GROUPS,
   GROUP_ORDER,
   fullAlg,
-  headlightFaces,
   inverseCase,
   mirrorCase,
   moveCount,
   orientationOf,
-  sameColorFaces,
   type CmllCase,
   type GroupId,
 } from "../data/cmll";
@@ -34,8 +37,8 @@ export function CmllTabs({ active }: { active: "tong-quan" | "2-look" | "all" | 
   useLang();
   const items = [
     { id: "tong-quan", to: "/cmll", label: tr("Tổng quan & so sánh", "Overview & comparison") },
-    { id: "2-look", to: "/cmll/2-look", label: tr("CMLL 2-look (cơ bản)", "CMLL 2-look (basic)") },
-    { id: "all", to: "/cmll/all", label: tr("Đủ 42 case (nâng cao)", "All 42 cases (advanced)") },
+    { id: "2-look", to: "/cmll/2-look", label: tr("Bước 3 · CMLL 2-look", "Step 3 · CMLL 2-look") },
+    { id: "all", to: "/cmll/all", label: tr("Nâng cao A · Đủ 42 case", "Advanced A · All 42 cases") },
     { id: "tim", to: "/finder", label: tr("Tìm case của tôi", "Find my case") },
   ] as const;
   return (
@@ -76,7 +79,7 @@ export function CmllHome() {
   const { learned } = useSettings();
   useLang();
   return (
-    <>
+    <WithToc items={[{ id: "muc-tieu", label: tr("Mục tiêu", "The goal") }, { id: "hai-cach", label: tr("2-look hay đủ 42 case", "2-look or all 42") }, { id: "lo-trinh", label: tr("Lộ trình học", "Learning path") }]}>
       <PageHead
         title={tr("CMLL: giải bốn góc tầng cuối", "CMLL: solve the last four corners")}
         crumbs={<a href={href("/")}>{tr("Trang chủ", "Home")}</a>}
@@ -87,7 +90,7 @@ export function CmllHome() {
       />
       <CmllTabs active="tong-quan" />
 
-      <h2>{tr("Mục tiêu và vị trí trong lượt giải", "The goal and where it fits in the solve")}</h2>
+      <h2 id="muc-tieu">{tr("Mục tiêu và vị trí trong lượt giải", "The goal and where it fits in the solve")}</h2>
       <div className="figs">
         <Fig caption={tr("Trước CMLL: hai khối xong, bốn góc tầng trên lộn xộn", "Before CMLL: both blocks are done, the four top corners are mixed up")}>
           <CaseTop state={CMLL_BY_ID.get("s-left-bar")!.state} width={170} title={tr("Một case CMLL trước khi giải", "A CMLL case before solving")} />
@@ -126,7 +129,7 @@ export function CmllHome() {
         </p>
       </Why>
 
-      <h2>{tr("CMLL 2-look hay đủ 42 case?", "CMLL 2-look or all 42 cases?")}</h2>
+      <h2 id="hai-cach">{tr("CMLL 2-look hay đủ 42 case?", "CMLL 2-look or all 42 cases?")}</h2>
       <p>
         {tr(
           <>
@@ -234,7 +237,7 @@ export function CmllHome() {
         </p>
       </Why>
 
-      <h2>{tr("Lộ trình học đủ 42 case", "A path to learning all 42 cases")}</h2>
+      <h2 id="lo-trinh">{tr("Lộ trình học đủ 42 case", "A path to learning all 42 cases")}</h2>
       <ol>
         <li>
           {tr(
@@ -288,7 +291,7 @@ export function CmllHome() {
         )}{" "}
         <a href={href("/cmll/all")}>{tr("Mở thư viện đủ 42 case →", "Open the library of all 42 cases →")}</a>
       </p>
-    </>
+    </WithToc>
   );
 }
 
@@ -316,6 +319,12 @@ function OrientCard({ a, state, scramble }: { a: OrientAlg; state: State; scramb
           <CopyButton text={a.alg} />
         </div>
         <div className="small">{a.note}</div>
+        <div style={{ margin: "4px 0" }}>
+          <HandTags alg={a.alg} />
+        </div>
+        <HalfTurnNote alg={a.alg} />
+        {!a.options && <RuleFingers alg={a.alg} />}
+        {(a.group === "S" || a.group === "As") && <HandDrill />}
         <ScrambleLine scramble={sc} compact onReroll={() => setSc(caseScrambleOf(group[Math.floor(Math.random() * group.length)]))} />
       </div>
       {a.options && <OrientOptions a={a} />}
@@ -352,6 +361,9 @@ function OrientOptions({ a }: { a: OrientAlg }) {
                   {o.source.name}
                 </a>
               )}
+            </span>
+            <span style={{ display: "block", margin: "2px 0" }}>
+              <HandTags alg={o.alg} />
             </span>
             <span className="perm-notes small">
               {o.pros.map((t) => (
@@ -414,12 +426,12 @@ export function CmllTwoLook() {
   const plan = useMemo(() => planTwoLook(example.state)!, [example, lang, perm]);
   const [exStep, setExStep] = useState(0);
   return (
-    <>
+    <WithToc items={[{ id: "luot-1", label: tr("Lượt 1: xoay hướng", "Step 1: orient") }, { id: "luot-2", label: tr("Lượt 2: đổi chỗ góc", "Step 2: swap corners") }, { id: "vi-du", label: tr("Ví dụ trọn vẹn", "Complete example") }]}>
       <PageHead
-        title="CMLL 2-look"
+        title={tr("Bước 3: CMLL 2-look", "Step 3: CMLL 2-look")}
         crumbs={
           <>
-            <a href={href("/cmll")}>CMLL</a> › 2-look
+            <a href={href("/cmll")}>CMLL</a> › {tr("Bước 3 · 2-look", "Step 3 · 2-look")}
           </>
         }
         lead={tr(
@@ -428,6 +440,13 @@ export function CmllTwoLook() {
         )}
       />
       <CmllTabs active="2-look" />
+      <div className="bar" aria-label={tr("Hai lượt của 2-look", "The two steps of 2-look")}>
+        <a className="chip" href={href("/cmll/2-look") + "?at=luot-1"}>{tr("① Lượt 1: xoay hướng", "① Step 1: orient")}</a>
+        <span aria-hidden>→</span>
+        <a className="chip" href={href("/cmll/2-look") + "?at=luot-2"}>{tr("② Lượt 2: đổi chỗ góc", "② Step 2: swap corners")}</a>
+        <span aria-hidden>→</span>
+        <a className="chip" href={href("/cmll/2-look") + "?at=vi-du"}>{tr("Ví dụ", "Example")}</a>
+      </div>
 
       <Callout kind="tip" title={tr("Nhắc lại cách đọc hình", "How to read the pictures, again")}>
         <p style={{ margin: 0 }}>
@@ -444,7 +463,7 @@ export function CmllTwoLook() {
         </p>
       </Callout>
 
-      <h2>{tr("Lượt 1: xoay hướng bốn góc", "Step 1: orient the four corners")}</h2>
+      <h2 id="luot-1">{tr("Lượt 1: xoay hướng bốn góc", "Step 1: orient the four corners")}</h2>
       <p>
         {tr(
           <>
@@ -471,7 +490,13 @@ export function CmllTwoLook() {
         ))}
       </div>
 
-      <h2>{tr("Lượt 2: đổi chỗ góc", "Step 2: swap the corners")}</h2>
+      <p>
+        <a className="btn" href={href("/cmll/2-look") + "?at=luot-2"}>
+          {tr("Cả bốn góc đã có màu mặt trên nằm trên mặt trên? Sang lượt 2 ↓", "All four corners have the top colour on top? On to step 2 ↓")}
+        </a>
+      </p>
+
+      <h2 id="luot-2">{tr("Lượt 2: đổi chỗ góc", "Step 2: swap the corners")}</h2>
       <p>
         {tr(
           <>
@@ -504,7 +529,7 @@ export function CmllTwoLook() {
         </p>
       </Why>
 
-      <h2>{tr("Ví dụ trọn vẹn một case", "A complete example of one case")}</h2>
+      <h2 id="vi-du">{tr("Ví dụ trọn vẹn một case", "A complete example of one case")}</h2>
       <p>
         {tr(
           "Case này (nhóm U) cần cả hai lượt. Bấm qua từng lượt để xem hình trước và sau lượt đó, rồi xem từng nước ở trình xem bên dưới.",
@@ -567,7 +592,7 @@ export function CmllTwoLook() {
           )}
         </p>
       </Callout>
-    </>
+    </WithToc>
   );
 }
 
@@ -593,12 +618,12 @@ export function CmllLibrary() {
   }, [group, q, onlyTodo, learned, lang]);
 
   return (
-    <>
+    <WithToc items={GROUP_ORDER.map((g) => ({ id: `g-${g}`, label: GROUPS[g].label }))}>
       <PageHead
-        title={tr("Thư viện đủ 42 case CMLL", "Library of all 42 CMLL cases")}
+        title={tr("Nâng cao A: thư viện đủ 42 case CMLL", "Advanced A: library of all 42 CMLL cases")}
         crumbs={
           <>
-            <a href={href("/cmll")}>CMLL</a> › {tr("Đủ 42 case", "All 42 cases")}
+            <a href={href("/cmll")}>CMLL</a> › {tr("Nâng cao A · Đủ 42 case", "Advanced A · All 42 cases")}
           </>
         }
         lead={tr("Mỗi hình là một cách bốn góc có thể nằm. Bấm vào hình để xem thuật toán, từng bước và lý do.", "Each picture is one way the four corners can sit. Click a picture to see the algorithm, the step-by-step view and the reasons.")}
@@ -666,7 +691,7 @@ export function CmllLibrary() {
           </section>
         );
       })}
-    </>
+    </WithToc>
   );
 }
 
@@ -674,15 +699,21 @@ export function CaseCard({ c }: { c: CmllCase }) {
   const { learned } = useSettings();
   const isDone = learned.includes(c.id);
   return (
-    <a className="card case-card" href={href(`/cmll/${c.id}`)} aria-label={`${GROUPS[c.group].label} ${c.sourceName}${isDone ? tr(" (đã thuộc)", " (learned)") : ""}`}>
+    <a className="card case-card" href={href(`/cmll/${c.id}`)} aria-label={`${GROUPS[c.group].label} ${caseLabel(c)}, ${placementPhrase(c.state)}${isDone ? tr(" (đã thuộc)", " (learned)") : ""}`}>
       {isDone && (
         <span className="done tag ok" aria-hidden>
           ✓
         </span>
       )}
       <CaseTop state={c.state} width={132} />
-      <div className="nm">
-        {GROUPS[c.group].label} · {c.sourceName}
+      <div className="nm" style={{ fontSize: "0.82em", fontWeight: 500 }}>
+        {tr(`Nhóm ${GROUPS[c.group].label}`, `${GROUPS[c.group].label} group`)}
+      </div>
+      <div className="small" style={{ lineHeight: 1.35 }}>
+        {placementPhrase(c.state)}
+      </div>
+      <div className="small muted" translate="no" style={{ fontSize: "0.78em" }}>
+        Ruwix: {caseLabel(c)}
       </div>
       <div className="sub" translate="no">
         {movesText(moveCount(c.algs[0].alg))} · {pct(c.id)}%
@@ -696,8 +727,8 @@ export function CaseCard({ c }: { c: CmllCase }) {
 const recognizeWhy = (g: GroupId): string =>
   ({
     S: tr(
-      "Sune biến ba góc thành một vòng xoay cùng chiều. Nhìn thấy đúng một góc vàng nằm trên, ba góc còn lại có vàng quay ra mặt bên theo một vòng, là biết đó là họ Sune.",
-      "Sune turns three corners in one cycle, all the same way. If you see exactly one corner with yellow on top, and the other three have yellow turned to the side in a cycle, you know it is the Sune family.",
+      "Sune biến ba góc thành một vòng xoay cùng chiều. Nhìn thấy đúng một góc vàng nằm trên, ba góc còn lại có vàng quay ra mặt bên theo một vòng, là biết đó là nhóm Sune.",
+      "Sune turns three corners in one cycle, all the same way. If you see exactly one corner with yellow on top, and the other three have yellow turned to the side in a cycle, you know it is the Sune group.",
     ),
     As: tr(
       "Antisune là hình đối xứng của Sune: cũng một góc vàng trên mặt trên, nhưng vàng của ba góc còn lại quay theo chiều ngược lại.",
@@ -729,27 +760,62 @@ const recognizeWhy = (g: GroupId): string =>
     ),
   })[g];
 
-function recognition(c: CmllCase): string[] {
-  const out: string[] = [];
-  const oriented = orientationOf(c.state).filter((o) => o === 0).length;
-  out.push(tr(`${oriented} trong 4 góc đã có sticker vàng trên mặt trên.`, `${oriented} of the 4 corners already have a yellow sticker on the top face.`));
-  const heads = headlightFaces(c.state);
-  out.push(
-    heads.length
-      ? tr(
-          `Đèn pha (hai sticker cạnh nhau cùng màu, không phải vàng) ở mặt ${heads.map((h) => h.label).join(" và ")}.`,
-          `Headlights (two stickers side by side with the same colour, not yellow) on the ${heads.map((h) => h.label).join(" and ")} face.`,
-        )
-      : tr("Không có đèn pha.", "No headlights."),
-  );
-  const bars = sameColorFaces(c.state).filter((x) => x.color === 0);
-  if (bars.length) out.push(tr(`Hai sticker vàng kề nhau trên mặt ${bars.map((b) => b.label).join(" và ")}.`, `Two yellow stickers side by side on the ${bars.map((b) => b.label).join(" and ")} face.`));
-  return out;
-}
-
 function CaseScramble({ c }: { c: CmllCase }) {
   const [sc, setSc] = useState(() => tidy(invertAlg(fullAlg(c.algs[0]))));
   return <ScrambleLine scramble={sc} onReroll={() => setSc(caseScrambleOf(c))} />;
+}
+
+const netTurns = (alg: string, face: string) =>
+  alg
+    .split(" ")
+    .filter((t) => t[0] === face)
+    .reduce((n, t) => n + (t.includes("2") ? 2 : t.includes("'") ? -1 : 1), 0);
+
+/** hints for "Sai ở đâu?"; the L and F lines only appear when the algorithm really has that face and its turns cancel out */
+function WhereWrong({ alg }: { alg: string }) {
+  const has = (f: string) => alg.split(" ").some((t) => t[0] === f);
+  const cancels = (f: string) => ((netTurns(alg, f) % 4) + 4) % 4 === 0;
+  return (
+    <div style={{ flex: 1, minWidth: 220 }}>
+      <h3 style={{ margin: "0 0 4px" }}>{tr("Sai ở đâu?", "What went wrong?")}</h3>
+      <ul className="small" style={{ margin: 0, paddingLeft: 18 }}>
+        <li>
+          {tr(
+            "Kết quả lệch đúng một nước U ở cuối: bình thường, bốn góc đã đúng thứ tự. Xoay thêm U hoặc U' (phần gạch chấm) cho khớp với hai khối.",
+            "The result is off by one U turn at the end: that is normal, the four corners are already in order. Turn one more U or U' (the dotted part) to line up with the two blocks.",
+          )}
+        </li>
+        <li>
+          {tr(
+            "Hai khối còn nguyên nhưng bốn góc lộn xộn lạ: bạn đã nhầm một nước, thường là U với U' hoặc R với R'. Mở “Từng bước” bên dưới và so từng nước.",
+            "Both blocks are fine but the corners look strangely mixed up: you made one wrong move, often U for U' or R for R'. Open “Step by step” below and compare move by move.",
+          )}
+        </li>
+        {has("L") && cancels("L") && (
+          <li>
+            {tr(
+              "Khối bên trái bị vỡ: các nước L phải trả lại nguyên trạng ở cuối. Đếm lại L và L' xem chiều đã đúng chưa.",
+              "The left block is broken: the L moves must be put back exactly by the end. Count your L and L' again and check the direction.",
+            )}
+          </li>
+        )}
+        {has("F") && cancels("F") && (
+          <li>
+            {tr(
+              "Hàng dưới của mặt trước lệch so với hai khối: các nước F phải triệt tiêu nhau (F với F'). Đếm lại F và F'.",
+              "The bottom row of the front face is out of line with the two blocks: the F moves must cancel out (F with F'). Count your F and F' again.",
+            )}
+          </li>
+        )}
+        <li>
+          {tr(
+            "Không giống hình ngay từ đầu: bạn làm sai chuỗi trộn. Dùng nút trộn lại, hoặc bắt đầu lại từ cube đã giải.",
+            "It did not look like the picture even at the start: the scramble was done wrongly. Use the reroll button, or start again from a solved cube.",
+          )}
+        </li>
+      </ul>
+    </div>
+  );
 }
 
 export function CmllDetail({ id }: { id: string }) {
@@ -772,27 +838,27 @@ export function CmllDetail({ id }: { id: string }) {
   const mirror = mirrorCase(c);
   const inverse = inverseCase(c);
   return (
-    <>
+    <WithToc items={[{ id: "thuat-toan", label: tr("Thuật toán", "Algorithm") }, { id: "nhan-ra", label: tr("Cách nhận ra", "How to recognise") }, { id: "luyen", label: tr("Luyện case", "Practise") }, { id: "tung-buoc", label: tr("Từng bước", "Step by step") }, { id: "lien-quan", label: tr("Case liên quan", "Related cases") }]}>
       <PageHead
-        title={`${GROUPS[c.group].label} · ${c.sourceName}`}
+        title={`${GROUPS[c.group].label} · ${caseLabel(c)}`}
         crumbs={
           <>
-            <a href={href("/cmll")}>CMLL</a> › <a href={href("/cmll/all")}>{tr("Đủ 42 case", "All 42 cases")}</a> › {GROUPS[c.group].label}
+            <a href={href("/cmll")}>CMLL</a> › <a href={href("/cmll/all")}>{tr("Nâng cao A · Đủ 42 case", "Advanced A · All 42 cases")}</a> › {GROUPS[c.group].label}
           </>
         }
         lead={GROUPS[c.group].blurb}
       />
       <div className="detail-top">
         <Fig caption={tr("Case này nhìn từ trên xuống (mặt trước ở phía dưới)", "This case seen from above (the front face is at the bottom)")}>
-          <CaseTop state={c.state} width={250} title={tr(`Case ${GROUPS[c.group].label} ${c.sourceName}`, `${GROUPS[c.group].label} ${c.sourceName} case`)} />
+          <CaseTop state={c.state} width={250} title={tr(`Case ${GROUPS[c.group].label} ${caseLabel(c)}`, `${GROUPS[c.group].label} ${caseLabel(c)} case`)} />
         </Fig>
         <div>
           <p style={{ marginTop: 0 }}>
             <span className="tag">{tr(`Gặp khoảng ${pct(c.id)}% số lần`, `Appears about ${pct(c.id)}% of the time`)}</span>{" "}
-            <span className="tag">{tr("Tên theo Ruwix:", "Name on Ruwix:")} {c.sourceName}</span>
+            <span className="tag">{tr("Tên theo Ruwix:", "Name on Ruwix:")} {caseLabel(c)}</span>
           </p>
           <LearnedBox id={c.id} label={tr("Mình đã thuộc case này", "I have learned this case")} />
-          <h2 style={{ marginTop: "0.8em" }}>{tr("Thuật toán", "Algorithm")}</h2>
+          <h2 id="thuat-toan" style={{ marginTop: "0.8em" }}>{tr("Thuật toán", "Algorithm")}</h2>
           {c.algs.map((a, i) => (
             <div key={i} className="alg-row" style={{ alignItems: "center" }}>
               <label style={{ display: "flex", gap: 6, alignItems: "center", cursor: "pointer" }}>
@@ -809,10 +875,14 @@ export function CmllDetail({ id }: { id: string }) {
                   {tr(`${a.votes} phiếu`, `${a.votes} votes`)}
                 </a>
               )}
+              <div style={{ flexBasis: "100%" }}>
+                <HandTags alg={a.alg} />
+                <HalfTurnNote alg={a.alg} />
+              </div>
               {a.finger && (
                 <div className="small alg-finger">
                   <span className="muted">
-                    {tr("Ngón tay theo John Mark:", "Fingers by John Mark:")} <code translate="no">{a.finger}</code>
+                    {tr("Ngón tay theo John Mark (mã ký hiệu):", "Fingers by John Mark (the code):")} <code translate="no">{a.finger}</code>
                   </span>
                   <ul>
                     {fingerWords(a.finger).map((f, j) => (
@@ -826,35 +896,60 @@ export function CmllDetail({ id }: { id: string }) {
           ))}
           <p className="small muted">
             {tr(
-              "Phần gạch chấm là nước U căn chỉnh (AUF): làm trước hoặc sau thuật toán để hình khớp. Chọn nút tròn bên trái để xem thuật toán nào ở phần từng bước.",
-              "The dotted part is the U alignment move (AUF): do it before or after the algorithm so the picture matches. Pick the round button on the left to choose which algorithm the step-by-step view shows.",
+              "Phần gạch chấm là nước U căn chỉnh: làm trước hoặc sau thuật toán để hình khớp. Chọn nút tròn bên trái để xem thuật toán nào ở phần từng bước.",
+              "The dotted part is the U alignment move: do it before or after the algorithm so the picture matches. Pick the round button on the left to choose which algorithm the step-by-step view shows.",
             )}
           </p>
-          <p className="small muted">
-            {tr(
-              <>
-                Thứ tự theo số phiếu của người chơi trên <a href="https://speedcubedb.com/a/3x3/CMLL" target="_blank" rel="noreferrer">SpeedCubeDB</a>; bằng phiếu thì cách ít
-                nước ngoài R, U, r, M (ít phải đổi tay cầm) đứng trước. Số phiếu nhỏ và lẫn người chơi một tay, nên chỉ để tham khảo. Ký hiệu ngón tay là của bảng
-                CMLL hai tay của John Mark (<a href="https://docs.google.com/spreadsheets/d/1T94xPQU6-bIXUpT0GbdVNFLbpryEgXEmeJcI77SejEk" target="_blank" rel="noreferrer">bảng</a>,{" "}
-                <a href="https://youtu.be/w2xNpUkRbZk" target="_blank" rel="noreferrer">video giải thích ký hiệu</a>), viết theo hệ ký hiệu DeeDubb (
-                <a href="https://ruwix.com/the-rubiks-cube/notation/advanced/" target="_blank" rel="noreferrer">Ruwix</a>). Lời dịch theo hệ đó: chữ hoa là tay phải, chữ thường là
-                tay trái; ở mặt trên, số 1 đến 4 là góc sau trái, sau phải, trước phải, trước trái. Ở các mặt khác chưa có nguồn viết về con số, nên lời dịch chỉ nói tay và ngón.
-              </>,
-              <>
-                Ordered by player votes on <a href="https://speedcubedb.com/a/3x3/CMLL" target="_blank" rel="noreferrer">SpeedCubeDB</a>; on a tie, the one with fewer turns
-                outside R, U, r, M (less regripping) comes first. The vote counts are small and include one-handed solvers, so take them as a hint. The finger code
-                is from John Mark's two-handed CMLL sheet (<a href="https://docs.google.com/spreadsheets/d/1T94xPQU6-bIXUpT0GbdVNFLbpryEgXEmeJcI77SejEk" target="_blank" rel="noreferrer">sheet</a>,{" "}
-                <a href="https://youtu.be/w2xNpUkRbZk" target="_blank" rel="noreferrer">video explaining the code</a>), written in the DeeDubb notation (
-                <a href="https://ruwix.com/the-rubiks-cube/notation/advanced/" target="_blank" rel="noreferrer">Ruwix</a>). The words follow that notation: upper case is the right
-                hand, lower case the left; on the top face the numbers 1 to 4 are the back left, back right, front right and front left corners. No written source gives the
-                numbers on the other faces, so there the words only say the hand and finger.
-              </>,
-            )}
+          <p className="small" style={{ margin: "0 0 4px" }}>
+            {tr("Cách đầu tiên được nhiều phiếu nhất trên SpeedCubeDB.", "The first way has the most votes on SpeedCubeDB.")}
           </p>
+          <details className="small">
+            <summary>{tr("Nguồn và cách xếp thứ tự", "Sources and how the ways are ordered")}</summary>
+            <p>
+              {tr(
+                <>
+                  Thứ tự theo số phiếu của người chơi trên <a href="https://speedcubedb.com/a/3x3/CMLL" target="_blank" rel="noreferrer">SpeedCubeDB</a>; bằng phiếu thì cách ít
+                  nước ngoài R, U, r, M (ít phải đổi tay cầm) đứng trước. Số phiếu nhỏ và lẫn người chơi một tay, nên chỉ để tham khảo.
+                </>,
+                <>
+                  Ordered by player votes on <a href="https://speedcubedb.com/a/3x3/CMLL" target="_blank" rel="noreferrer">SpeedCubeDB</a>; on a tie, the one with fewer turns
+                  outside R, U, r, M (less regripping) comes first. The vote counts are small and include one-handed solvers, so take them as a hint.
+                </>,
+              )}
+            </p>
+          </details>
+          {c.algs.some((a) => a.finger) && (
+            <details className="small">
+              <summary>{tr("Cách đọc ký hiệu ngón", "How to read the finger code")}</summary>
+              <p>
+                {tr(
+                  <>
+                    Ký hiệu ngón tay là của bảng CMLL hai tay của John Mark (<a href="https://docs.google.com/spreadsheets/d/1T94xPQU6-bIXUpT0GbdVNFLbpryEgXEmeJcI77SejEk" target="_blank" rel="noreferrer">bảng</a>,{" "}
+                    <a href="https://youtu.be/w2xNpUkRbZk" target="_blank" rel="noreferrer">video giải thích ký hiệu</a>), viết theo hệ ký hiệu DeeDubb (
+                    <a href="https://ruwix.com/the-rubiks-cube/notation/advanced/" target="_blank" rel="noreferrer">Ruwix</a>). Lời dịch theo hệ đó: chữ hoa là tay phải, chữ thường là
+                    tay trái; ở mặt trên, số 1 đến 4 là góc sau trái, sau phải, trước phải, trước trái. Ở các mặt khác chưa có nguồn viết về con số, nên lời dịch chỉ nói tay và ngón.
+                  </>,
+                  <>
+                    The finger code is from John Mark's two-handed CMLL sheet (<a href="https://docs.google.com/spreadsheets/d/1T94xPQU6-bIXUpT0GbdVNFLbpryEgXEmeJcI77SejEk" target="_blank" rel="noreferrer">sheet</a>,{" "}
+                    <a href="https://youtu.be/w2xNpUkRbZk" target="_blank" rel="noreferrer">video explaining the code</a>), written in the DeeDubb notation (
+                    <a href="https://ruwix.com/the-rubiks-cube/notation/advanced/" target="_blank" rel="noreferrer">Ruwix</a>). The words follow that notation: upper case is the right
+                    hand, lower case the left; on the top face the numbers 1 to 4 are the back left, back right, front right and front left corners. No written source gives the
+                    numbers on the other faces, so there the words only say the hand and finger.
+                  </>,
+                )}
+              </p>
+            </details>
+          )}
         </div>
       </div>
 
-      <h2>{tr("Luyện case này", "Practise this case")}</h2>
+      <CaseRecognition c={c} />
+      <Why title={tr(`Vì sao nhìn thế này lại biết là nhóm ${GROUPS[c.group].label}?`, `Why does this look mean the ${GROUPS[c.group].label} group?`)}>
+        <p>{recognizeWhy(c.group)}</p>
+        <p className="small muted">{tr("Ở đây “vàng” nghĩa là màu tâm mặt trên của cube bạn, dù nó là màu gì.", "Here “yellow” means the colour of your own top centre, whatever it is.")}</p>
+      </Why>
+
+      <h2 id="luyen">{tr("Luyện case này", "Practise this case")}</h2>
       <p className="small muted">
         {tr(
           "Cầm cube đã giải, làm đúng chuỗi dưới đây: bạn sẽ có hai khối đã xong và bốn góc đúng như hình. Rồi dùng thuật toán để giải lại.",
@@ -862,19 +957,17 @@ export function CmllDetail({ id }: { id: string }) {
         )}
       </p>
       <CaseScramble c={c} />
+      <div style={{ display: "flex", gap: 20, flexWrap: "wrap", alignItems: "flex-start", marginTop: 10 }}>
+        <Fig caption={tr("Khi xong bạn sẽ thấy: bốn góc đúng, cạnh (xám) mặc kệ", "When you are done you will see this: four corners right, edges (grey) ignored")}>
+          <CaseTop state={applyAlg(c.state, fullAlg(alg))} width={110} title={tr("Mặt trên sau khi giải xong", "The top after solving")} />
+        </Fig>
+        <WhereWrong alg={alg.alg} />
+      </div>
+      <TryThree key={c.id} id={c.id} />
 
-      <h2>{tr("Từng bước", "Step by step")}</h2>
+      <h2 id="tung-buoc">{tr("Từng bước", "Step by step")}</h2>
       <AlgStepper start={c.state} alg={alg.alg} pre={alg.pre} post={alg.post} doneText={tr("Xong: bốn góc đã đúng", "Done: all four corners are right")} />
 
-      <h2>{tr("Cách nhận ra case này", "How to recognise this case")}</h2>
-      <ul>
-        {recognition(c).map((r) => (
-          <li key={r}>{r}</li>
-        ))}
-      </ul>
-      <Why title={tr(`Vì sao nhìn thế này lại biết là họ ${GROUPS[c.group].label}?`, `Why does this look mean the ${GROUPS[c.group].label} family?`)}>
-        <p>{recognizeWhy(c.group)}</p>
-      </Why>
       <Why title={tr("Vì sao thuật toán này giữ nguyên hai khối?", "Why does this algorithm keep both blocks intact?")}>
         <p>
           {tr(
@@ -902,7 +995,7 @@ export function CmllDetail({ id }: { id: string }) {
         </p>
       </Why>
 
-      <h2>{tr("Các case liên quan", "Related cases")}</h2>
+      <h2 id="lien-quan">{tr("Các case liên quan", "Related cases")}</h2>
       <div className="case-grid" style={{ maxWidth: 420 }}>
         {mirror && mirror.id !== c.id && (
           <div>
@@ -932,6 +1025,6 @@ export function CmllDetail({ id }: { id: string }) {
           {GROUPS[next.group].label} · {next.sourceName} →
         </a>
       </div>
-    </>
+    </WithToc>
   );
 }

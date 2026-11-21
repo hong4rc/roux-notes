@@ -1,11 +1,14 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { applyAlg, pieceStickers, solvedState, type Face, type State } from "../../shared/cube";
 import { CubeIso } from "../components/cube-iso";
 import { handNote } from "../data/fingertricks";
 import { EDGE_POS, badEdges, buildSpace, distToGoal, edgeColours, flipEdges, lookupState, pathFrom, type Dist, type Space } from "../../shared/lse-space";
-import { HAND_DRILLS, solveByIdea, type DrillPart, type DrillStep } from "../../shared/lse-drill";
+import { DRILL_PIECES, HAND_DRILLS, solveByIdea, type DrillPart, type DrillStep } from "../../shared/lse-drill";
 import { lseScramble, tidy } from "../lib/scramble";
 import { AlgStepper } from "../components/alg-stepper";
+import { EdgeMoves, EoStory, PieceTable } from "../components/edge-story";
+import { LsePath } from "../components/lse-path";
+import { LseTryLab } from "../components/lse-try";
 import { MoveTricks } from "../components/finger-hint";
 import { LseView } from "../components/lse-view";
 import { Toc } from "../components/toc";
@@ -15,6 +18,13 @@ import { colorName, tr, useLang } from "../lib/i18n";
 import { currentScheme } from "../lib/palette";
 import { href } from "../lib/router";
 import { setLseHand, useSettings } from "../lib/store";
+
+/** the names of the top and bottom colours in brackets (" (vàng hoặc trắng)"), but only once the learner has told the site their cube; otherwise nothing */
+function useSchemeBrackets() {
+  const { schemeAsked } = useSettings();
+  const sc = currentScheme();
+  return schemeAsked ? ` (${colorName(sc.U)} ${tr("hoặc", "or")} ${colorName(sc.D)} ${tr("trên cube của bạn", "on your cube")})` : "";
+}
 
 const S = solvedState();
 const LEFT_PAIR = "0,4";
@@ -83,6 +93,7 @@ const moves = (n: number) => tr(`${n} nước`, `${n} ${n === 1 ? "move" : "move
 export const LSE_ANCHOR_PAGE: Record<string, "" | "tra-cuu" | "nang-cao"> = {
   "tong-quan": "",
   "hoc-y-tuong": "",
+  "so-lieu": "",
   eo: "tra-cuu",
   ulur: "tra-cuu",
   l4e: "tra-cuu",
@@ -120,14 +131,15 @@ function LseTabs({ active }: { active: "" | "tra-cuu" | "nang-cao" }) {
 }
 
 export function LseOverviewPage() {
-  const st = data.stats;
+  const schemeBrackets = useSchemeBrackets();
   return (
     <>
       <div className="with-toc">
         <Toc
           items={[
-            { id: "tong-quan", label: tr("Tổng quan", "Overview") },
+            { id: "tong-quan", label: tr("Đường học", "The learning path") },
             { id: "hoc-y-tuong", label: tr("Học theo ý tưởng và luyện tập", "Learn the ideas and practise") },
+            { id: "so-lieu", label: tr("Số liệu và lựa chọn", "Numbers and choices") },
           ]}
         />
         <div>
@@ -141,104 +153,42 @@ export function LseOverviewPage() {
           />
           <LseTabs active="" />
           <h2 id="tong-quan" style={{ marginTop: 0 }}>
-            {tr("Tổng quan", "Overview")}
+            {tr("Đường học: ba bước", "The learning path: three steps")}
           </h2>
           <p>
             {tr(
               <>
                 Sau CMLL, hai khối và bốn góc đã xong. Sáu cạnh còn lại gồm <strong>bốn cạnh ở tầng trên</strong> (UF, UB, UL, UR) và{" "}
-                <strong>hai cạnh ở đáy lát giữa</strong> (DF, DB). Phương pháp 3 bước phổ biến:
+                <strong>hai cạnh ở đáy lát giữa</strong> (DF, DB). Bạn giải chúng bằng ba bước, mỗi bước chỉ dùng nước M và U. Cộng đồng Roux gọi ba bước này là 4a, 4b và 4c.
               </>,
               <>
                 After CMLL, the two blocks and the four corners are done. The six remaining edges are <strong>four edges in the top layer</strong> (UF, UB, UL, UR)
-                and <strong>two edges at the bottom of the middle slice</strong> (DF, DB). The common 3-step method:
+                and <strong>two edges at the bottom of the middle slice</strong> (DF, DB). You solve them in three steps, each using only M and U moves. The Roux
+                community calls these three steps 4a, 4b and 4c.
               </>,
             )}
           </p>
-          <ol>
-            <li>
-              {tr(
-                <>
-                  <strong>EO (4a)</strong>: lật các cạnh cho “ngửa” hết: màu {colorName(currentScheme().U)} hoặc {colorName(currentScheme().D)} của mỗi cạnh phải nhìn lên trên hoặc xuống dưới. Chưa cần đúng chỗ.
-                </>,
-                <>
-                  <strong>EO (4a)</strong>: flip the edges so they all “face up”: the {colorName(currentScheme().U)} or {colorName(currentScheme().D)} sticker of every edge looks up or down. Where they sit does not matter yet.
-                </>,
-              )}
-            </li>
-            <li>
-              {tr(
-                <>
-                  <strong>UL/UR (4b)</strong>: đưa hai cạnh có màu trái và phải về đúng chỗ UL và UR.
-                </>,
-                <>
-                  <strong>UL/UR (4b)</strong>: bring the two edges with the left and right colours to UL and UR.
-                </>,
-              )}
-            </li>
-            <li>
-              {tr(
-                <>
-                  <strong>4c</strong>: xếp nốt bốn cạnh còn lại chỉ bằng M và U2.
-                </>,
-                <>
-                  <strong>4c</strong>: place the last four edges using only M and U2.
-                </>,
-              )}
-            </li>
-          </ol>
+          <LsePath />
+          <p>
+            {tr(
+              `Cạnh “ngửa” (cạnh tốt) là cạnh có sticker màu mặt trên hoặc mặt dưới (màu của tâm trên hoặc tâm dưới)${schemeBrackets} nhìn lên hoặc nhìn xuống. Ở bước 1 bạn chưa cần đưa cạnh về đúng chỗ.`,
+              `A “face-up” (good) edge has its top-or-bottom-colour sticker (the colour of the top or bottom centre)${schemeBrackets} looking up or down. In step 1 you do not need to put the edges in their places yet.`,
+            )}
+          </p>
           <Why title={tr("Vì sao chỉ dùng M và U?", "Why only M and U?")}>
             <p>
               {tr(
                 <>
                   Hai khối nằm ở hai bên trái và phải; lát giữa M và tầng trên U không chạm vào chúng. Mọi nước M và U cũng giữ nguyên các góc ở đáy; U chỉ xoay
-                  bốn góc tầng trên cùng nhau. Nên chỉ cần căn lại U ở cuối là các góc và hai khối vẫn đúng. Nhờ giới hạn này, toàn bộ bước LSE có{" "}
-                  <strong>{st.states.toLocaleString("vi-VN")}</strong> trạng thái và đều giải được trong tối đa {st.optimalMax} nước.
+                  bốn góc tầng trên cùng nhau. Nên chỉ cần căn lại U ở cuối là các góc và hai khối vẫn đúng.
                 </>,
                 <>
                   The two blocks sit on the left and right; the M slice and the U layer do not touch them. Every M and U move also leaves the corners at the bottom
                   alone; U only turns the four top corners together. So you only need to line up U at the end and the corners and the two blocks stay correct.
-                  Thanks to this limit, the whole LSE step has <strong>{st.states.toLocaleString("en-US")}</strong> states and every one can be solved in at most{" "}
-                  {st.optimalMax} moves.
                 </>,
               )}
             </p>
           </Why>
-
-          <div className="table-scroll">
-            <table className="tbl">
-              <thead>
-                <tr>
-                  <th>{tr("Cách giải LSE", "LSE method")}</th>
-                  <th>{tr("Số nước trung bình", "Average moves")}</th>
-                  <th>{tr("Nhiều nhất", "Maximum")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{tr("3 bước: EO → UL/UR → 4c (phần Tra cứu)", "3 steps: EO → UL/UR → 4c (the Lookup part)")}</td>
-                  <td>{st.threeStepAvg}</td>
-                  <td>{st.threeStepMax}</td>
-                </tr>
-                <tr>
-                  <td>{tr("2 bước: EO và UL/UR gộp một thuật toán (cùng ý với EOLR) → 4c", "2 steps: EO and UL/UR combined in one algorithm (the same idea as EOLR) → 4c")}</td>
-                  <td>{st.twoStepAvg}</td>
-                  <td>{st.twoStepMax}</td>
-                </tr>
-                <tr>
-                  <td>{tr("Giải tối ưu một mạch (L6E), tính bằng máy", "Optimal solve in one go (L6E), found by computer")}</td>
-                  <td>{st.optimalAvg}</td>
-                  <td>{st.optimalMax}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p className="small muted">
-            {tr(
-              `Tính trên mọi trạng thái LSE mà bốn góc đã thẳng hàng với hai khối (${st.alignedStates.toLocaleString("vi-VN")} trạng thái), một nước U2 hoặc M2 tính một nước. Mọi thuật toán trên trang do chương trình tìm kiếm toàn bộ không gian M/U và đã được chạy lại để kiểm.`,
-              `Counted over every LSE state where the four corners are already lined up with the two blocks (${st.alignedStates.toLocaleString("en-US")} states); a U2 or M2 turn counts as one move. Every algorithm on this page was found by a program that searched the whole M/U space, and was run again to check it.`,
-            )}
-          </p>
           <LearnByIdea />
         </div>
       </div>
@@ -280,8 +230,8 @@ export function LseAdvancedPage() {
         <Toc
           items={[
             { id: "nang-cao", label: tr("Nâng cao", "Advanced") },
-            { id: "eolr", label: "EOLR" },
-            { id: "l6e", label: "L6E" },
+            { id: "eolr", label: tr("EOLR: gộp bước 1 và 2", "EOLR: steps 1 and 2 in one") },
+            { id: "l6e", label: tr("L6E: sáu cạnh một mạch", "L6E: six edges in one go") },
           ]}
         />
         <div>
@@ -305,8 +255,8 @@ export function LseAdvancedPage() {
           <Callout kind="info" title={tr("Về nguồn", "About the sources")}>
             <p style={{ margin: 0 }}>
               {tr(
-                "Tên gọi 4a, 4b, 4c, EOLR và L6E theo cách dùng trong cộng đồng Roux (Scheopner, Rouxvolution). Ở bước EO, trang ghi cả công thức phổ biến (Rouxvolution, CubeTools) lẫn công thức máy tìm. Các bước còn lại dùng công thức ngắn nhất do máy tìm, tính sẵn và lưu lại; cộng đồng có thể dùng biến thể dài hơn nhưng dễ lướt tay hơn.",
-                "The names 4a, 4b, 4c, EOLR and L6E follow the way the Roux community uses them (Scheopner, Rouxvolution). For EO the page gives both the common algorithms (Rouxvolution, CubeTools) and the computer's. The other steps use the shortest algorithms found by the computer, worked out once and saved; the community may use longer variants that are easier to execute.",
+                "Tên gọi 4a, 4b, 4c (ba bước EO, UL/UR, bốn cạnh cuối), EOLR (EO cộng cạnh trái và phải) và L6E (sáu cạnh cuối) theo cách dùng trong cộng đồng Roux (Scheopner, Rouxvolution). Ở bước EO, trang ghi cả công thức phổ biến (Rouxvolution, CubeTools) lẫn công thức chương trình tìm. Các bước còn lại dùng công thức ngắn nhất do chương trình tìm, tính sẵn và lưu lại; cộng đồng có thể dùng biến thể dài hơn nhưng dễ lướt tay hơn.",
+                "The names 4a, 4b, 4c (the three steps EO, UL/UR and the last four edges), EOLR (EO plus the left and right edges) and L6E (the last six edges) follow the way the Roux community uses them (Scheopner, Rouxvolution). For EO the page gives both the common algorithms (Rouxvolution, CubeTools) and the computer's. The other steps use the shortest algorithms found by the computer, worked out once and saved; the community may use longer variants that are easier to execute.",
               )}
             </p>
           </Callout>
@@ -384,96 +334,11 @@ function LearnByIdea() {
       <h2 id="hoc-y-tuong">{tr("Tự học LSE: nhớ ít, hiểu ý tưởng", "Learning LSE yourself: remember little, understand the ideas")}</h2>
       <p>
         {tr(
-          "Các bộ tra bên dưới cho công thức ngắn nhất của từng trường hợp, nhưng nhớ hết thì quá nhiều. Người chơi Roux thường học khác: nhớ vài chuỗi rất ngắn, hiểu mỗi chuỗi làm gì, rồi tự ghép lại. Chậm hơn một chút, nhưng giải được mọi trường hợp mà không cần tra.",
-          "The lookup tools below give the shortest algorithm for each case, but remembering them all is a lot. Roux solvers usually learn differently: remember a few very short sequences, understand what each one does, and put them together yourself. A little slower, but it solves every case without looking anything up.",
+          "Phần Tra cứu cho công thức ngắn nhất của từng trường hợp, nhưng nhớ hết thì quá nhiều. Người chơi Roux thường học khác: nhớ vài đoạn công thức rất ngắn, hiểu mỗi đoạn làm gì, rồi tự ghép lại. Chậm hơn một chút, nhưng giải được mọi trường hợp mà không cần tra.",
+          "The Lookup part gives the shortest algorithm for each case, but remembering them all is a lot. Roux solvers usually learn differently: remember a few very short pieces of algorithm, understand what each one does, and put them together yourself. A little slower, but it solves every case without looking anything up.",
         )}
       </p>
-      <h3>{tr("Cần nhớ bao nhiêu?", "How much do you need to remember?")}</h3>
-      <p>
-        {tr(
-          "Có hai cách, đều giải được mọi trường hợp. Cách dễ tay né nước M (khó gẩy hơn M') ở bước 1 và 2; bước 3 mỗi chuỗi vòng vẫn cần đúng một M, vì chỉ dùng M' thì phải gẩy tới 8 lần.",
-          "There are two ways, and both solve every case. The easy-hand way avoids M (harder to flick than M') in steps 1 and 2; in step 3 each cycle still needs exactly one M, because with M' alone it takes eight flicks.",
-        )}
-      </p>
-      <div className="table-scroll">
-        <table className="tbl">
-          <thead>
-            <tr>
-              <th>{tr("Bước", "Step")}</th>
-              <th>{tr("Dễ tay (gần như chỉ M')", "Easy hand (almost only M')")}</th>
-              <th>{tr("Chuẩn (Rouxvolution)", "Standard (Rouxvolution)")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{tr("1. EO", "1. EO")}</td>
-              <td>
-                <Algs list={["M' U M'"]} note={tr("Thêm M2 khi mũi tên quay ngược. Tối đa 4 lần.", "Plus M2 when the arrow points the other way. At most 4 times.")} />
-              </td>
-              <td>
-                <Algs list={["M' U M", "M U M'"]} note={tr("Tối đa 3 lần.", "At most 3 times.")} />
-              </td>
-            </tr>
-            <tr>
-              <td>{tr("2. UL/UR", "2. UL/UR")}</td>
-              <td>
-                <Algs list={["M2", "M' U2 M'"]} note={tr("Tối đa 4 lần.", "At most 4 times.")} />
-              </td>
-              <td>
-                <Algs list={["M2", "U2 M U2 M'"]} note={tr("Tối đa 4 lần.", "At most 4 times.")} />
-              </td>
-            </tr>
-            <tr>
-              <td>{tr("3. 4c", "3. 4c")}</td>
-              <td>
-                <Algs
-                  list={["U2 M U2 M'", "M' U2 M U2"]}
-                  note={tr(
-                    "Hai vòng (kẹp M2 hai đầu cho hai trường hợp còn lại) và 2 chuỗi đổi cặp. Tối đa 2 lần.",
-                    "Two cycles (M2 before and after for the other two cases) and the 2 pair swaps. At most 2 times.",
-                  )}
-                />
-              </td>
-              <td>{tr("6 chuỗi (bảng ở thẻ số 3). Tối đa 2 lần.", "6 sequences (table in card 3). At most 2 times.")}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p className="small muted">
-        {tr(
-          "Cách dễ tay: 7 chuỗi, chỉ 2 chuỗi có nước M. Cách chuẩn: 10 chuỗi. Số “tối đa” đã được máy kiểm trên mọi trường hợp (11.160 trường hợp EO, 348 trường hợp UL/UR, 11 trường hợp 4c), chỉ dùng các chuỗi này cộng nước U chen vào giữa.",
-          "Easy hand: 7 sequences, only 2 of them with an M. Standard: 10 sequences. The “at most” numbers were checked by computer on every case (11,160 EO cases, 348 UL/UR cases, 11 4c cases), using only these sequences plus U turns in between.",
-        )}
-      </p>
-
-      <Callout kind="tip" title={tr("Cách dễ tay: vì sao né được M", "The easy-hand way: why M can be avoided")}>
-        <ul style={{ margin: 0, paddingLeft: 18 }}>
-          <li>
-            {tr(
-              "EO chỉ quan tâm cạnh ngửa hay úp. Một nước M hay một nước M' đều lật bốn cạnh trong lát giữa y như nhau, nên M' U M' cũng sửa được hình mũi tên giống hệt M' U M. Chỉ khác là các cạnh nằm lại ở chỗ khác và lát giữa lệch nửa vòng; bước sau xếp chỗ và sửa luôn.",
-              "EO only cares whether an edge faces up or not. A quarter M and a quarter M' flip the four slice edges exactly the same way, so M' U M' fixes the arrow exactly as M' U M does. The only difference is the edges end up in other places and the slice ends half a turn off; the next step places them and fixes that.",
-            )}
-          </li>
-          <li>
-            {tr(
-              "Mũi tên quay ngược (cạnh tốt ở UF, cạnh xấu dưới ở DB): làm M2 trước, nó thành mũi tên thường, rồi M' U M'. M2 = gẩy M' hai lần.",
-              "Arrow pointing the other way (the good edge at UF, the bad bottom edge at DB): do M2 first, it becomes the normal arrow, then M' U M'. M2 = two M' flicks.",
-            )}
-          </li>
-          <li>
-            {tr(
-              "UL/UR: M' U2 M' đưa cạnh ở UB xuống DF và cạnh ở DF sang DB. Vậy khi một cạnh đã ở DF, xoay U cho cạnh kia về UB rồi làm M' U2 M': cả hai ở đáy. Sau đó vẫn là M2 đưa lên như thẻ số 2.",
-              "UL/UR: M' U2 M' takes the edge at UB down to DF and the edge at DF across to DB. So when one edge is at DF, turn U to bring the other to UB and do M' U2 M': both are at the bottom. Then M2 brings them up as in card 2.",
-            )}
-          </li>
-          <li>
-            {tr(
-              "4c: chỉ cần nhớ 2 vòng có cạnh đúng ở DF (U2 M U2 M') và ở DB (M' U2 M U2). Cạnh đúng ở UB hay UF: kẹp M2 hai đầu. Ví dụ M2 · U2 M U2 M' · M2 chính là M2 U2 M U2 M trong bảng.",
-              "4c: remember only the 2 cycles with the right edge at DF (U2 M U2 M') and at DB (M' U2 M U2). Right edge at UB or UF: put M2 before and after. For example M2 · U2 M U2 M' · M2 is exactly M2 U2 M U2 M from the table.",
-            )}
-          </li>
-        </ul>
-      </Callout>
+      <BlockTable />
 
       <div className="idea-grid">
         <IdeaCard title={tr("1. EO: tạo “mũi tên” rồi lật", "1. EO: make an “arrow”, then flip")}>
@@ -493,8 +358,8 @@ function LearnByIdea() {
           </div>
           <p>
             {tr(
-              "Hình “mũi tên”: ba cạnh trên xấu, cạnh tốt duy nhất ở sau (UB), và cạnh xấu ở dưới-trước (DF): làm M' U M. Bản gương: cạnh tốt ở trước (UF), cạnh xấu ở dưới-sau (DB): làm M U M'.",
-              "The “arrow”: three bad top edges, the only good one at the back (UB), and a bad edge at the bottom front (DF): do M' U M. The mirror: the good one at the front (UF), a bad one at the bottom back (DB): do M U M'.",
+              "Dạng “mũi tên” (tên Arrow trong hướng dẫn Rouxvolution): ba cạnh trên xấu, cạnh tốt duy nhất ở sau (UB), và cạnh xấu ở dưới-trước (DF): làm M' U M. Bản gương: cạnh tốt ở trước (UF), cạnh xấu ở dưới-sau (DB): làm M U M'.",
+              "The “arrow” (named Arrow in the Rouxvolution guides): three bad top edges, the only good one at the back (UB), and a bad edge at the bottom front (DF): do M' U M. The mirror: the good one at the front (UF), a bad one at the bottom back (DB): do M U M'.",
             )}
           </p>
           <p className="small">
@@ -576,7 +441,10 @@ function LearnByIdea() {
       </div>
 
       <LseDrill />
+      <LseTryLab initial="eo" describe={describeLse} />
       <HandDrills />
+
+      <LseNumbers />
 
       <p className="small muted">
         {tr("Nguồn ý tưởng: hướng dẫn Rouxvolution", "Where the ideas come from: the Rouxvolution guides")}{" "}
@@ -585,8 +453,197 @@ function LearnByIdea() {
         {tr("U-perm bằng M:", "U-perm with M:")}{" "}
         <a href="https://zeroplay.io/docs/rubik/tutorials/pll" target="_blank" rel="noreferrer">ZeroPlay</a>.{" "}
         {tr(
-          "Các con số “tối đa” và lời giải trong bài luyện do máy tìm, chỉ dùng đúng các chuỗi trên.",
+          "Các con số “tối đa” và lời giải trong bài luyện do chương trình tìm, chỉ dùng đúng các chuỗi trên.",
           "The “at most” numbers and the practice solutions were found by computer, using only the sequences above.",
+        )}
+      </p>
+    </>
+  );
+}
+
+/** the statistics, the three ways to solve LSE side by side, and the easy-hand against the standard sequences: for choosing, not for the first lesson */
+function LseNumbers() {
+  const st = data.stats;
+  return (
+    <>
+      <h2 id="so-lieu">{tr("Số liệu và lựa chọn", "Numbers and choices")}</h2>
+      <p>
+        {tr(
+          <>
+            Phần này để bạn chọn cách học sau khi đã thử các bước ở trên. Toàn bộ bước LSE có <strong>{st.states.toLocaleString("vi-VN")}</strong> trạng thái và mọi
+            trạng thái đều giải được trong tối đa {st.optimalMax} nước.
+          </>,
+          <>
+            This part is for choosing how to learn once you have tried the steps above. The whole LSE step has <strong>{st.states.toLocaleString("en-US")}</strong>{" "}
+            states and every one can be solved in at most {st.optimalMax} moves.
+          </>,
+        )}
+      </p>
+      <div className="table-scroll">
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>{tr("Cách giải LSE", "LSE method")}</th>
+              <th>{tr("Số nước trung bình", "Average moves")}</th>
+              <th>{tr("Nhiều nhất", "Maximum")}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{tr("3 bước: EO → UL/UR → 4c (phần Tra cứu)", "3 steps: EO → UL/UR → 4c (the Lookup part)")}</td>
+              <td>{st.threeStepAvg}</td>
+              <td>{st.threeStepMax}</td>
+            </tr>
+            <tr>
+              <td>
+                {tr(
+                  "2 bước: EO và UL/UR gộp một công thức (gọi là EOLR, viết tắt của EO cộng cạnh Trái và Phải, xem phần Nâng cao) → 4c",
+                  "2 steps: EO and UL/UR combined in one algorithm (called EOLR, short for EO plus the Left and Right edges, see the Advanced part) → 4c",
+                )}
+              </td>
+              <td>{st.twoStepAvg}</td>
+              <td>{st.twoStepMax}</td>
+            </tr>
+            <tr>
+              <td>
+                {tr(
+                  "Giải tối ưu một mạch (L6E, viết tắt của “last six edges”, sáu cạnh cuối), do chương trình tính",
+                  "Optimal solve in one go (L6E, short for “last six edges”), found by a program",
+                )}
+              </td>
+              <td>{st.optimalAvg}</td>
+              <td>{st.optimalMax}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p className="small muted">
+        {tr(
+          `Tính trên mọi trạng thái LSE mà bốn góc đã thẳng hàng với hai khối (${st.alignedStates.toLocaleString("vi-VN")} trạng thái), một nước U2 hoặc M2 tính một nước. Mọi công thức trên trang do chương trình tìm kiếm toàn bộ không gian M/U và đã được chạy lại để kiểm.`,
+          `Counted over every LSE state where the four corners are already lined up with the two blocks (${st.alignedStates.toLocaleString("en-US")} states); a U2 or M2 turn counts as one move. Every algorithm on this page was found by a program that searched the whole M/U space, and was run again to check it.`,
+        )}
+      </p>
+      <h3>{tr("Cần nhớ bao nhiêu? Hai cách chọn chuỗi", "How much do you need to remember? Two ways to choose sequences")}</h3>
+      <p>
+        {tr(
+          "Có hai cách, đều giải được mọi trường hợp. “Dễ tay” ở đây nghĩa là chọn các đoạn công thức gần như chỉ có M', vì M' dễ gẩy hơn M. Cách này né nước M ở bước 1 và 2; bước 3 mỗi chuỗi vòng vẫn cần đúng một M, vì chỉ dùng M' thì phải gẩy tới 8 lần. Cách “chuẩn” dùng cả M và M' như Rouxvolution viết.",
+          "There are two ways, and both solve every case. “Easy hand” here means choosing pieces of algorithm that are almost only M', because M' is easier to flick than M. This way avoids M in steps 1 and 2; in step 3 each cycle still needs exactly one M, because with M' alone it takes eight flicks. The “standard” way uses both M and M' as Rouxvolution writes it.",
+        )}
+      </p>
+      <div className="table-scroll">
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>{tr("Bước", "Step")}</th>
+              <th>{tr("Dễ tay (ít nước M, gần như chỉ M')", "Easy hand (few M moves, almost only M')")}</th>
+              <th>{tr("Chuẩn (Rouxvolution)", "Standard (Rouxvolution)")}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{tr("1. EO (xoay hướng cạnh)", "1. EO (orient the edges)")}</td>
+              <td>
+                <Algs list={["M' U M'"]} note={tr("Thêm M2 khi dạng mũi tên quay ngược. Tối đa 4 lần.", "Plus M2 when the arrow pattern points the other way. At most 4 times.")} />
+              </td>
+              <td>
+                <Algs list={["M' U M", "M U M'"]} note={tr("Tối đa 3 lần.", "At most 3 times.")} />
+              </td>
+            </tr>
+            <tr>
+              <td>{tr("2. UL/UR (hai cạnh trái và phải)", "2. UL/UR (the left and right edges)")}</td>
+              <td>
+                <Algs list={["M2", "M' U2 M'"]} note={tr("Tối đa 4 lần.", "At most 4 times.")} />
+              </td>
+              <td>
+                <Algs list={["M2", "U2 M U2 M'"]} note={tr("Tối đa 4 lần.", "At most 4 times.")} />
+              </td>
+            </tr>
+            <tr>
+              <td>{tr("3. 4c (bốn cạnh cuối)", "3. 4c (the last four edges)")}</td>
+              <td>
+                <Algs
+                  list={["U2 M U2 M'", "M' U2 M U2"]}
+                  note={tr(
+                    "Hai vòng (kẹp M2 hai đầu cho hai trường hợp còn lại) và 2 chuỗi đổi cặp. Tối đa 2 lần.",
+                    "Two cycles (M2 before and after for the other two cases) and the 2 pair swaps. At most 2 times.",
+                  )}
+                />
+              </td>
+              <td>{tr("6 chuỗi (bảng trong phần “3. 4c: tìm cạnh đã đúng” ở trên). Tối đa 2 lần.", "6 sequences (the table in “3. 4c: find the edge that is already right” above). At most 2 times.")}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p className="small muted">
+        {tr(
+          "Cách dễ tay: 7 chuỗi, chỉ 2 chuỗi có nước M. Cách chuẩn: 10 chuỗi. Số “tối đa” đã được chương trình kiểm trên mọi trường hợp (11.160 trường hợp EO, 348 trường hợp UL/UR, 11 trường hợp 4c), chỉ dùng các chuỗi này cộng nước U chen vào giữa.",
+          "Easy hand: 7 sequences, only 2 of them with an M. Standard: 10 sequences. The “at most” numbers were checked by a program on every case (11,160 EO cases, 348 UL/UR cases, 11 4c cases), using only these sequences plus U turns in between.",
+        )}
+      </p>
+
+      <Callout kind="tip" title={tr("Cách dễ tay: vì sao né được M", "The easy-hand way: why M can be avoided")}>
+        <ul style={{ margin: 0, paddingLeft: 18 }}>
+          <li>
+            {tr(
+              "EO chỉ quan tâm cạnh ngửa hay úp. Một nước M hay một nước M' đều lật bốn cạnh trong lát giữa y như nhau, nên M' U M' cũng sửa được dạng mũi tên giống hệt M' U M. Chỉ khác là các cạnh nằm lại ở chỗ khác và lát giữa lệch nửa vòng; bước sau xếp chỗ và sửa luôn.",
+              "EO only cares whether an edge faces up or not. A quarter M and a quarter M' flip the four slice edges exactly the same way, so M' U M' fixes the arrow pattern exactly as M' U M does. The only difference is the edges end up in other places and the slice ends half a turn off; the next step places them and fixes that.",
+            )}
+          </li>
+          <li>
+            {tr(
+              "Dạng mũi tên quay ngược (cạnh tốt ở UF, cạnh xấu dưới ở DB): làm M2 trước, nó thành mũi tên thường, rồi M' U M'. M2 = gẩy M' hai lần.",
+              "The arrow pattern pointing the other way (the good edge at UF, the bad bottom edge at DB): do M2 first, it becomes the normal arrow, then M' U M'. M2 = two M' flicks.",
+            )}
+          </li>
+          <li>
+            {tr(
+              "UL/UR: M' U2 M' đưa cạnh ở UB xuống DF và cạnh ở DF sang DB. Vậy khi một cạnh đã ở DF, xoay U cho cạnh kia về UB rồi làm M' U2 M': cả hai ở đáy. Sau đó vẫn là M2 đưa lên như ở phần “2. UL/UR: hạ xuống đáy rồi đưa lên”.",
+              "UL/UR: M' U2 M' takes the edge at UB down to DF and the edge at DF across to DB. So when one edge is at DF, turn U to bring the other to UB and do M' U2 M': both are at the bottom. Then M2 brings them up as in “2. UL/UR: drop them to the bottom, then bring them up”.",
+            )}
+          </li>
+          <li>
+            {tr(
+              "4c: chỉ cần nhớ 2 vòng có cạnh đúng ở DF (U2 M U2 M') và ở DB (M' U2 M U2). Cạnh đúng ở UB hay UF: kẹp M2 hai đầu. Ví dụ M2 · U2 M U2 M' · M2 chính là M2 U2 M U2 M trong bảng.",
+              "4c: remember only the 2 cycles with the right edge at DF (U2 M U2 M') and at DB (M' U2 M U2). Right edge at UB or UF: put M2 before and after. For example M2 · U2 M U2 M' · M2 is exactly M2 U2 M U2 M from the table.",
+            )}
+          </li>
+        </ul>
+      </Callout>
+
+    </>
+  );
+}
+
+/** every small piece of algorithm in the three steps, with what it does to the edges (worked out on the cube engine's model) */
+function BlockTable() {
+  const pieces = useMemo(() => {
+    const all = [...DRILL_PIECES.std.eo, ...DRILL_PIECES.std.ulur, ...DRILL_PIECES.std.l4e, ...DRILL_PIECES.easy.eo, ...DRILL_PIECES.easy.ulur, ...DRILL_PIECES.easy.l4e];
+    return [...new Set(all)];
+  }, []);
+  return (
+    <>
+      <h3>{tr("Tự suy ra: mỗi đoạn công thức nhỏ làm gì", "Work it out yourself: what each small piece of algorithm does")}</h3>
+      <p>
+        {tr(
+          <>
+            Không cần thuộc cả danh sách. Cả bước EO, UL/UR và 4c đều chỉ ghép các đoạn công thức nhỏ dưới đây, và mỗi đoạn chỉ làm hai việc đo được: <strong>lật</strong> một số
+            cạnh và <strong>chuyển</strong> các cạnh theo vòng. Đọc bảng như sau: “Lật cạnh đang ở UF” nghĩa là cạnh đang đứng ở UF trước khi làm chuỗi sẽ bị lật;
+            “UF → DB → UF” nghĩa là cạnh ở UF đi tới DB và cạnh ở DB đi tới UF. Muốn biết một chuỗi dài làm gì, đặt các đoạn nối nhau và theo dõi từng cạnh, hoặc dùng bài
+            “Tự thử và kiểm tra” bên dưới để chương trình theo dõi hộ.
+          </>,
+          <>
+            You do not need to memorise the whole list. EO, UL/UR and 4c are all built from the small pieces below, and each piece does only two measurable things:{" "}
+            <strong>flips</strong> some edges and <strong>moves</strong> edges round in cycles. Read the table like this: “Flips the edge at UF” means the edge standing at UF
+            before the piece is flipped; “UF → DB → UF” means the edge at UF goes to DB and the edge at DB goes to UF. To know what a longer sequence does, lay the pieces one
+            after another and follow each edge, or use the “Try it yourself and check” practice below and let the page follow them for you.
+          </>,
+        )}
+      </p>
+      <PieceTable pieces={pieces} />
+      <p className="small muted">
+        {tr(
+          "Bảng do chương trình tính trên đúng mô hình cube của trang và đã được so lại với mô phỏng đầy đủ cho từng chuỗi.",
+          "The table is computed by the program on the page's own cube model and was checked against the full simulation for every piece.",
         )}
       </p>
     </>
@@ -595,7 +652,7 @@ function LearnByIdea() {
 
 function HandDrills() {
   const what = {
-    eo: () => tr("M' liền với U hoặc U' (bước EO dễ tay)", "M' straight into U or U' (the easy-hand EO)"),
+    eo: () => tr("M' liền với U hoặc U' (bước EO theo cách ít nước M)", "M' straight into U or U' (the EO step the few-M way)"),
     ulur: () => tr("M2 và M' U2 M' (bước UL/UR)", "M2 and M' U2 M' (the UL/UR step)"),
     l4e: () => tr("nước M trong một vòng 4c, M' ngay sau", "the M of a 4c cycle, with M' right after"),
   };
@@ -660,6 +717,11 @@ function partText(p: DrillPart) {
 function LseDrill() {
   const [step, setStep] = useState<DrillStep>("eo");
   const [scramble, setScramble] = useState<string | null>(null);
+  // the first scramble is built after the page has painted: the search behind it takes about a second
+  useEffect(() => {
+    const id = setTimeout(() => setScramble((s) => s ?? lseScramble("eo")), 0);
+    return () => clearTimeout(id);
+  }, []);
   const [show, setShow] = useState<"none" | "hint" | "answer">("none");
   const next = (k: DrillStep = step) => {
     setStep(k);
@@ -697,7 +759,7 @@ function LseDrill() {
       <div className="bar" role="group" aria-label={tr("Kiểu tay", "Hand style")}>
         <span className="small muted">{tr("Kiểu tay:", "Hand style:")}</span>
         <button type="button" className="chip" aria-pressed={hand === "easy"} onClick={() => setLseHand("easy")}>
-          {tr("Dễ tay (gần như chỉ M')", "Easy hand (almost only M')")}
+          {tr("Dễ tay (ít nước M, gần như chỉ M')", "Easy hand (few M moves, almost only M')")}
         </button>
         <button type="button" className="chip" aria-pressed={hand === "std"} onClick={() => setLseHand("std")}>
           {tr("Chuẩn (M và M')", "Standard (M and M')")}
@@ -705,7 +767,7 @@ function LseDrill() {
       </div>
       <div className="bar" role="group" aria-label={tr("Chọn bước để luyện", "Choose the step to practise")}>
         {DRILL_TABS.map((t) => (
-          <button key={t.id} type="button" className="chip" aria-pressed={scramble !== null && step === t.id} onClick={() => next(t.id)}>
+          <button key={t.id} type="button" className="chip" aria-pressed={step === t.id} onClick={() => next(t.id)}>
             {t.label()}
           </button>
         ))}
@@ -765,19 +827,41 @@ function swapEdges(st: State, a: string, b: string): State {
 
 type KnownAlg = { source: string; url: string; name: string; alg: string; pre: string; centresHalfOff: boolean };
 
-/** the published algorithms for one EO pattern, then the computer's shortest when it is different */
+const moveCount = (alg: string, pre = "") => `${pre} ${alg}`.split(" ").filter(Boolean).length;
+
+/** the same algorithm (same turn first, same finish) listed by several sources becomes one entry that carries every source */
+function mergeKnown(known: KnownAlg[]) {
+  const out: { key: string; alg: string; pre: string; centresHalfOff: boolean; sources: { source: string; url: string; name: string }[] }[] = [];
+  for (const k of known) {
+    const key = `${k.pre}|${k.alg}|${k.centresHalfOff}`;
+    const hit = out.find((o) => o.key === key);
+    const src = { source: k.source, url: k.url, name: k.name };
+    if (hit) hit.sources.push(src);
+    else out.push({ key, alg: k.alg, pre: k.pre, centresHalfOff: k.centresHalfOff, sources: [src] });
+  }
+  return out;
+}
+
+/** the published algorithms for one EO pattern (identical ones merged, with all their sources), then the program's shortest only when it is shorter than every published one */
 function EoAlgs({ machine, known, compact }: { machine: string; known: KnownAlg[]; compact?: boolean }) {
-  const same = known.some((k) => !k.pre && k.alg === machine);
+  const list = mergeKnown(known);
+  const shortest = Math.min(...known.map((k) => moveCount(k.alg, k.pre)));
+  const showMachine = !!machine && (!known.length || moveCount(machine) < shortest);
   return (
     <div className={`eo-algs ${compact ? "small" : ""}`}>
-      {known.map((k) => (
-        <div key={k.source + k.alg} className="eo-alg">
+      {list.map((k) => (
+        <div key={k.key} className="eo-alg">
           <div className="muted small">
             {tr("Phổ biến", "Common")} ·{" "}
-            <a href={k.url} target="_blank" rel="noreferrer">
-              {k.source}
-            </a>{" "}
-            “{k.name}”
+            {k.sources.map((src, i) => (
+              <span key={src.source + src.name}>
+                {i > 0 && ", "}
+                <a href={src.url} target="_blank" rel="noreferrer">
+                  {src.source}
+                </a>{" "}
+                “{src.name}”
+              </span>
+            ))}
           </div>
           <div className="alg-row">
             <AlgText alg={k.alg} pre={k.pre} />
@@ -791,9 +875,9 @@ function EoAlgs({ machine, known, compact }: { machine: string; known: KnownAlg[
           <MoveTricks alg={k.alg} open={!compact} />
         </div>
       ))}
-      {!same && machine && (
+      {showMachine && (
         <div className="eo-alg">
-          <div className="muted small">{tr("Máy tìm (ngắn nhất)", "Found by the computer (shortest)")}</div>
+          <div className="muted small">{tr("Chương trình tìm (ngắn hơn các cách trên)", "Found by the program (shorter than the ones above)")}</div>
           <div className="alg-row">
             <AlgText alg={machine} />
             {!compact && <CopyButton text={machine} />}
@@ -807,22 +891,21 @@ function EoAlgs({ machine, known, compact }: { machine: string; known: KnownAlg[
 }
 
 function EoBasics() {
-  const sc = currentScheme();
-  const top = colorName(sc.U), bottom = colorName(sc.D);
+  const names = useSchemeBrackets();
   const only = (keep: string[]) => {
     const set = new Set([...keep.flatMap((p) => pieceStickers(p)), ...["U", "F", "R", "D"].flatMap((p) => pieceStickers(p))]);
     return (i: number) => !set.has(i);
   };
   const examples = [
-    { state: S, keep: ["UF"], ok: true, below: false, text: tr(`Tốt: màu ${top} nằm trên mặt trên.`, `Good: the ${top} sticker is on the top face.`) },
-    { state: flipEdges(S, ["UF"]), keep: ["UF"], ok: false, below: false, text: tr(`Xấu: màu ${top} quay ra mặt trước.`, `Bad: the ${top} sticker faces the front.`) },
+    { state: S, keep: ["UF"], ok: true, below: false, text: tr("Tốt: sticker màu mặt trên/dưới nằm trên mặt trên.", "Good: the top/bottom-colour sticker is on the top face.") },
+    { state: flipEdges(S, ["UF"]), keep: ["UF"], ok: false, below: false, text: tr("Xấu: sticker màu mặt trên/dưới quay ra mặt trước.", "Bad: the top/bottom-colour sticker faces the front.") },
     {
       state: swapEdges(S, "UF", "UB"),
       keep: ["UF", "UB"],
       ok: true,
       text: tr(
-        `Tốt dù sai chỗ: hai cạnh trước và sau đổi chỗ cho nhau, nhưng màu ${top} vẫn nằm trên mặt trên.`,
-        `Good though misplaced: the front and back edges have swapped places, but the ${top} stickers are still on the top face.`,
+        "Tốt dù sai chỗ: hai cạnh trước và sau đổi chỗ cho nhau, nhưng sticker màu mặt trên/dưới vẫn nằm trên mặt trên.",
+        "Good though misplaced: the front and back edges have swapped places, but the top/bottom-colour stickers are still on the top face.",
       ),
     },
     {
@@ -831,8 +914,8 @@ function EoBasics() {
       below: true,
       ok: true,
       text: tr(
-        `Nhìn từ dưới lên: cạnh màu ${top} chạy xuống đáy, màu ${top} nằm trên mặt ${bottom} (mặt dưới). Vẫn là cạnh tốt.`,
-        `Seen from below: the ${top} edge went to the bottom and its ${top} sticker lies on the ${bottom} (bottom) face. Still a good edge.`,
+        "Nhìn từ dưới lên: cạnh đã chạy xuống đáy và sticker màu mặt trên/dưới của nó nằm trên mặt dưới. Vẫn là cạnh tốt.",
+        "Seen from below: the edge went to the bottom and its top/bottom-colour sticker lies on the bottom face. Still a good edge.",
       ),
     },
   ];
@@ -841,12 +924,13 @@ function EoBasics() {
       <p>
         {tr(
           <>
-            Mỗi cạnh có hai màu. Sáu cạnh còn lại ở bước này cạnh nào cũng có <strong>một màu {top} hoặc {bottom}</strong> (màu của mặt trên hoặc mặt dưới). Hãy
-            coi màu đó là “mặt hình” của một lá bài:
+            Mỗi cạnh có hai màu. Sáu cạnh còn lại ở bước này cạnh nào cũng có <strong>một sticker mang màu của tâm trên hoặc tâm dưới</strong> (hai màu đối nhau của
+            cube){names}. Từ đây mình gọi sticker đó là <strong>màu mặt trên/dưới</strong>. Hãy coi nó là “mặt hình” của một lá bài:
           </>,
           <>
-            Each edge has two colours. Every one of the six edges left in this step has <strong>one {top} or {bottom} sticker</strong> (the colour of the top or bottom
-            face). Think of that sticker as the picture side of a playing card:
+            Each edge has two colours. Every one of the six edges left in this step has <strong>one sticker in the colour of the top centre or the bottom centre</strong>{" "}
+            (the two opposite colours of the cube){names}. From here on that sticker is called the <strong>top/bottom colour</strong>. Think of it as the picture side of a
+            playing card:
           </>,
         )}
       </p>
@@ -854,20 +938,20 @@ function EoBasics() {
         <li>
           {tr(
             <>
-              <strong>Cạnh tốt</strong>: màu {top}/{bottom} nhìn <strong>lên trên hoặc xuống dưới</strong>, như lá bài nằm ngửa trên bàn.
+              <strong>Cạnh tốt</strong>: màu mặt trên/dưới nhìn <strong>lên trên hoặc xuống dưới</strong>, như lá bài nằm ngửa trên bàn.
             </>,
             <>
-              <strong>Good edge</strong>: the {top}/{bottom} sticker looks <strong>up or down</strong>, like a card lying flat on the table.
+              <strong>Good edge</strong>: the top/bottom colour looks <strong>up or down</strong>, like a card lying flat on the table.
             </>,
           )}
         </li>
         <li>
           {tr(
             <>
-              <strong>Cạnh xấu</strong>: màu {top}/{bottom} quay <strong>ra một mặt bên</strong> (trước, sau, trái, phải), như lá bài dựng đứng.
+              <strong>Cạnh xấu</strong>: màu mặt trên/dưới quay <strong>ra một mặt bên</strong> (trước, sau, trái, phải), như lá bài dựng đứng.
             </>,
             <>
-              <strong>Bad edge</strong>: the {top}/{bottom} sticker faces <strong>a side</strong> (front, back, left, right), like a card standing on its edge.
+              <strong>Bad edge</strong>: the top/bottom colour faces <strong>a side</strong> (front, back, left, right), like a card standing on its edge.
             </>,
           )}
         </li>
@@ -892,15 +976,15 @@ function EoBasics() {
       <Callout kind="info" title={tr("Còn các cạnh khác thì sao?", "What about the other edges?")}>
         <p style={{ margin: 0 }}>
           {tr(
-            `Các cạnh có hai màu bên cạnh nhau, ví dụ cạnh ${colorName(sc.R)}-${bottom} hay ${colorName(sc.L)}-${bottom}, đã nằm trong hai khối từ trước. Bước này không đụng tới chúng, nên không cần xem.`,
-            `Edges such as ${colorName(sc.R)}-${bottom} or ${colorName(sc.L)}-${bottom} are already inside the two blocks. This step does not touch them, so you do not look at them.`,
+            "Hai cạnh nằm giữa mặt dưới và mặt trái, giữa mặt dưới và mặt phải, đã nằm trong hai khối từ trước. Bước này không đụng tới chúng, nên không cần xem.",
+            "The edge between the bottom and left faces and the edge between the bottom and right faces are already inside the two blocks. This step does not touch them, so you do not look at them.",
           )}
         </p>
       </Callout>
       <p className="small muted">
         {tr(
-          `Nhìn khi tâm trên là màu ${top} hoặc ${bottom}. Nếu tâm trên đang là màu khác, xoay M một lần cho thẳng trước.`,
-          `Look while the top centre is ${top} or ${bottom}. If the top centre shows another colour, turn M once to line it up first.`,
+          "Nhìn khi tâm trên cùng màu với sticker mặt trên của bốn góc tầng trên. Nếu tâm trên đang là màu khác, xoay M cho thẳng trước (M, M' hoặc M2, tùy tâm đang lệch bao nhiêu).",
+          "Look while the top centre has the same colour as the top stickers of the four top corners. If the top centre shows another colour, turn M to line it up first (M, M' or M2, depending on how far the centre is off).",
         )}
       </p>
     </>
@@ -946,16 +1030,16 @@ function Eo() {
       <h3>{tr("Tìm thuật toán EO", "Find the EO algorithm")}</h3>
       <p>
         {tr(
-          "Sáu ô dưới đây là sáu cạnh của bước cuối (đúng những cạnh mà M và U di chuyển), xếp theo vị trí trên cube. Với mỗi cạnh, nhìn cube của bạn: nếu sticker vàng hoặc trắng của nó nằm ở mặt bên thì chạm ô đó để đánh dấu “xấu”. Trang sẽ tìm thuật toán ngắn nhất, kể cả nước U xoay trước nếu cần.",
-          "The six tiles below are the six edges of the last step (exactly the edges that M and U move), laid out like the cube. For each edge, look at your cube: if its yellow or white sticker is on a side face, tap the tile to mark it “bad”. The page then finds the shortest algorithm, including a U turn first if needed.",
+          "Sáu ô dưới đây là sáu cạnh của bước cuối (đúng những cạnh mà M và U di chuyển), xếp theo vị trí trên cube. Với mỗi cạnh, nhìn cube của bạn: nếu sticker màu mặt trên/dưới của nó (màu của tâm trên hoặc tâm dưới, khi các tâm lát giữa đã thẳng hàng) nằm ở mặt bên thì chạm ô đó để đánh dấu “xấu”. Trang sẽ tìm thuật toán ngắn nhất, kể cả nước U xoay trước nếu cần.",
+          "The six tiles below are the six edges of the last step (exactly the edges that M and U move), laid out like the cube. For each edge, look at your cube: if its top/bottom-colour sticker (the colour of the top or bottom centre, while the middle-slice centres are lined up) is on a side face, tap the tile to mark it “bad”. The page then finds the shortest algorithm, including a U turn first if needed.",
         )}
       </p>
       <EdgeMap bad={bad} toggle={toggle} reset={() => setBad([])} />
       <div style={{ display: "flex", gap: 20, flexWrap: "wrap", alignItems: "center" }}>
         <Fig
           caption={tr(
-            "Cạnh xấu: sticker vàng/trắng nằm ở mặt bên. Trái: nhìn từ trên. Phải: nhìn từ dưới lên.",
-            "Bad edge: the yellow/white sticker is on a side face. Left: seen from above. Right: seen from below.",
+            "Cạnh xấu: sticker màu mặt trên/dưới nằm ở mặt bên. Trái: nhìn từ trên. Phải: nhìn từ dưới lên.",
+            "Bad edge: the top/bottom-colour sticker is on a side face. Left: seen from above. Right: seen from below.",
           )}
         >
           <LseView state={state} mode="eo" width={170} />
@@ -978,6 +1062,7 @@ function Eo() {
                   : tr(`${bad.length} cạnh xấu. Các cách làm:`, `${bad.length} bad ${bad.length === 1 ? "edge" : "edges"}. Ways to do it:`)}
               </p>
               {hit.alg && <EoAlgs machine={hit.alg} known={hit.known} />}
+              {hit.alg && <EoStory alg={hit.alg} bad={bad} />}
               <p className="small muted">
                 {tr(
                   "Sau khi làm, tâm vẫn thẳng hàng; có thể cần một nước U để căn góc (bước kế tiếp xử lý).",
@@ -989,13 +1074,13 @@ function Eo() {
         </div>
       </div>
 
-      <h3>{tr("12 dạng EO (giữ nguyên hướng xoay U)", "The 12 EO patterns (keeping the U turn direction)")}</h3>
+      <h3>{tr("Các dạng EO: cạnh xấu nằm ở đâu", "The EO patterns: where the bad edges are")}</h3>
       <p>
         {tr(
           <>
             Mỗi dạng có <strong>công thức phổ biến</strong> lấy từ tài liệu cộng đồng (Rouxvolution, CubeTools; bấm tên nguồn để xem) và{" "}
-            <strong>công thức máy tìm</strong>: máy thử mọi cách và giữ cách ngắn nhất. Máy tính sẵn một lần rồi lưu lại, không tính lúc bạn mở trang. Mọi công thức
-            ở đây đều đã được máy thử lại trên đúng hình của dạng đó.
+            <strong>công thức chương trình tìm</strong>: chương trình thử mọi cách và giữ cách ngắn nhất. Chương trình tính sẵn một lần rồi lưu lại, không tính lúc bạn mở trang. Mọi công thức
+            ở đây đều đã được chương trình thử lại trên đúng hình của dạng đó.
           </>,
           <>
             Each pattern has the <strong>common algorithm</strong> from community guides (Rouxvolution, CubeTools; tap the source name to see it) and the{" "}
@@ -1011,7 +1096,7 @@ function Eo() {
         )}
       </p>
       <div className="grid cols-3">
-        {data.eo.filter((e) => e.alg).map((e) => {
+        {data.eo.filter((e) => e.alg).map((e, idx) => {
           const label = tr(
             `${e.top} cạnh xấu trên${e.shape ? (e.shape === "a" ? " (kề nhau)" : " (đối nhau)") : ""}, ${e.bottom.length} dưới`,
             `${e.top} bad on top${e.shape ? (e.shape === "a" ? " (adjacent)" : " (opposite)") : ""}, ${e.bottom.length} on the bottom`,
@@ -1024,6 +1109,7 @@ function Eo() {
                 {e.bottom.length === 1 ? ` (${e.bottom[0]})` : ""}
               </div>
               <EoAlgs machine={e.alg} known={e.known} compact />
+              <EoStory alg={e.alg} bad={e.bad} open={idx === 0} />
             </div>
           );
         })}
@@ -1117,9 +1203,10 @@ function Ulur() {
                 </div>
               </>
             ) : (
-              <p style={{ marginTop: 0 }}>{tr("Hai cạnh đã đúng chỗ: sang bước 3.", "Both edges are already in place: go to step 3.")}</p>
+              <p style={{ marginTop: 0 }}>{tr("Hai cạnh đã đúng chỗ: sang bước 4c (bốn cạnh cuối).", "Both edges are already in place: go to 4c (the last four edges).")}</p>
             )}
             <p className="small muted">{tr("Thuật toán đã tính cả nước U cần để giữ bốn góc khớp ở cuối.", "The algorithm already includes the U move needed to keep the four corners matched at the end.")}</p>
+            <EdgeMoves state={state} positions={["UL", "UR"]} />
             <ScrambleLine scramble={hit.scramble} compact />
           </div>
         </div>
@@ -1166,6 +1253,7 @@ function L4e() {
               <div style={{ textAlign: "center" }}>
                 {c.alg ? (
                   <>
+                    <EdgeMoves state={state} positions={["UF", "UB", "DF", "DB"]} />
                     <AlgText alg={c.alg} />
                     <div className="small muted">{moves(c.len)}</div>
                     <ScrambleLine scramble={c.scramble} compact />
@@ -1208,7 +1296,7 @@ function Eolr() {
   const state = useMemo(() => (hit ? applyAlg(S, hit.scramble) : S), [hit]);
   return (
     <>
-      <h3 id="eolr">{tr("EOLR: bước 1 và 2 gộp làm một", "EOLR: steps 1 and 2 in one algorithm")}</h3>
+      <h3 id="eolr">{tr("EOLR (EO cộng cạnh trái và phải): bước 1 và 2 gộp làm một", "EOLR (EO plus the left and right edges): steps 1 and 2 in one algorithm")}</h3>
       <p>
         {tr(
           <>
@@ -1229,6 +1317,35 @@ function Eolr() {
           "Conditions as in the earlier steps: centres lined up and the four corners matched. Tap the bad edges, then choose where the left and right edges are.",
         )}
       </p>
+      <Callout kind="tip" title={tr("Tự học EOLR: không cần thuộc 960 trường hợp", "Learning EOLR: you do not need to memorise 960 cases")}>
+        <ol style={{ margin: 0, paddingLeft: 18 }}>
+          <li>
+            {tr(
+              "Ghi ra ba điều: cạnh nào xấu, cạnh trái đang ở đâu, cạnh phải đang ở đâu. Cạnh trái và cạnh phải cũng là hai cạnh phải được lật nếu chúng xấu, nên chúng đi cùng các cạnh khác trong lát giữa.",
+              "Write down three things: which edges are bad, where the left edge is and where the right edge is. The left and right edges also need flipping if they are bad, so they travel with the other edges through the middle slice.",
+            )}
+          </li>
+          <li>
+            {tr(
+              "Ghép các đoạn công thức nhỏ của bước EO và bước UL/UR (bảng ở phần “Học theo ý tưởng”, xoay U trước mỗi đoạn khi cần) cho tới khi đạt hai điều cùng lúc: không còn cạnh xấu, và cả cạnh trái lẫn cạnh phải nằm ở đáy (DF và DB). Mỗi đoạn chuyển cạnh theo vòng, nên sau mỗi đoạn bạn thấy ngay hai cạnh này đã xuống đáy chưa.",
+              "Lay the small pieces of the EO step and the UL/UR step one after another (the table in “Learn the ideas”, turning U before a piece when needed) until two things hold at once: no bad edge is left, and both the left and the right edge sit at the bottom (DF and DB). The pieces move edges in cycles, so after each piece you see at once whether those two edges went down.",
+            )}
+          </li>
+          <li>
+            {tr(
+              "Khi hai điều đó đã đúng, kết bằng M2, thêm một nước U trước hoặc sau nếu cần để hai cạnh về đúng chỗ và góc khớp hai khối (M2 đưa hai cạnh lên và trả tâm về).",
+              "When both hold, finish with M2, adding a U turn before or after if needed so the two edges land in their places and the corners match the blocks (M2 brings the two edges up and puts the centres back).",
+            )}
+          </li>
+          <li>
+            {tr(
+              "Kiểm bằng bài “Tự thử và kiểm tra” bên dưới: số nước chương trình còn cần phải giảm dần về 0. Cách suy ra này dài hơn thuật toán ngắn nhất ở công cụ tra, nhưng không cần học thuộc: chương trình đã kiểm trên cả 959 trường hợp có việc phải làm, mỗi trường hợp ra được bằng tối đa bốn đoạn công thức nhỏ rồi M2.",
+              "Check with the “Try it yourself and check” practice below: the number of moves the solver still needs must fall to 0. This derived way is longer than the shortest algorithm in the lookup tool, but it needs no memorising: a program checked all 959 cases that have work to do, and each comes out with at most four small pieces and then M2.",
+            )}
+          </li>
+        </ol>
+      </Callout>
+      <LseTryLab initial="eolr" describe={describeLse} />
       <EdgeMap bad={bad} toggle={toggle} reset={() => setBad([])} />
       <div className="bar">
         <button type="button" className="btn small" onClick={reroll}>
@@ -1260,7 +1377,7 @@ function Eolr() {
           <p>
             {hit.alg
               ? tr(`Thuật toán EOLR ngắn nhất (${hit.len} nước):`, `Shortest EOLR algorithm (${moves(hit.len)}):`)
-              : tr("Không có cạnh xấu và hai cạnh đã đúng chỗ: sang bước 3.", "No bad edge and both edges in place: go to step 3.")}
+              : tr("Không có cạnh xấu và hai cạnh đã đúng chỗ: sang bước 4c (bốn cạnh cuối).", "No bad edge and both edges in place: go to 4c (the last four edges).")}
           </p>
           {hit.alg && (
             <>
@@ -1319,6 +1436,7 @@ function stateOf(pieces: string[], flipped: boolean[]) {
 }
 
 function L6e() {
+  const names = useSchemeBrackets();
   const ex = data.l6eExample;
   const exState = useMemo(() => applyAlg(S, ex.scramble), [ex.scramble]);
   const [pieces, setPieces] = useState<string[]>([...EDGE_POS]);
@@ -1349,13 +1467,13 @@ function L6e() {
   };
   return (
     <>
-      <h3 id="l6e">{tr("L6E: giải cả sáu cạnh một mạch", "L6E: solve all six edges in one go")}</h3>
+      <h3 id="l6e">{tr("L6E (sáu cạnh cuối): giải cả sáu cạnh một mạch", "L6E (last six edges): solve all six edges in one go")}</h3>
       <p>
         {tr(
           <>
             L6E bỏ hẳn các bước 1, 2, 3 và tìm <strong>một chuỗi M và U ngắn nhất</strong> đưa sáu cạnh về đúng. Trung bình chỉ {data.stats.optimalAvg} nước, nhiều nhất{" "}
             {data.stats.optimalMax}, so với {data.stats.threeStepAvg} nước của ba bước. Không ai nhớ nổi hết các trường hợp, nên người giỏi học dần các mẫu quen thuộc và nhìn
-            trước. Còn ở đây, máy tìm giúp bạn.
+            trước. Còn ở đây, chương trình tìm giúp bạn.
           </>,
           <>
             L6E drops steps 1, 2 and 3 and looks for <strong>one shortest sequence of M and U moves</strong> that solves all six edges. On average it takes only{" "}
@@ -1395,12 +1513,12 @@ function L6e() {
         {tr(
           <>
             Chỉ dùng được khi <strong>tâm đã thẳng hàng</strong> (xoay M cho thẳng) và <strong>bốn góc tầng trên đã khớp</strong> (xoay U cho khớp). Với mỗi vị trí cạnh, chọn
-            cạnh đang nằm ở đó (gọi theo hai màu của nó) và đánh dấu nếu cạnh bị <strong>xấu</strong> (sticker {colourOfFace("U")}/{colourOfFace("D")} nằm ở mặt bên).
+            cạnh đang nằm ở đó (gọi theo hai màu của nó) và đánh dấu nếu cạnh bị <strong>xấu</strong> (sticker màu mặt trên/dưới nằm ở mặt bên{names}).
           </>,
           <>
             Works only when <strong>the centres are lined up</strong> (turn M to line them up) and <strong>the four top corners match</strong> (turn U to match them). For each
-            edge position, choose the edge sitting there (named by its two colours) and tick it if it is <strong>bad</strong> (its {colourOfFace("U")}/{colourOfFace("D")} sticker is
-            on a side face).
+            edge position, choose the edge sitting there (named by its two colours) and tick it if it is <strong>bad</strong> (its top/bottom-colour sticker is
+            on a side face{names}).
           </>,
         )}
       </p>

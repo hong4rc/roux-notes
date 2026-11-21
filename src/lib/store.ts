@@ -7,11 +7,19 @@ export type OrientChoice = (typeof ORIENT_CHOICES)[number];
 
 export type Lang = "vi" | "en";
 
+/** the four steps of the course that can be marked as finished */
+export const STEP_IDS = ["first-block", "second-block", "cmll-2-look", "lse"] as const;
+export type StepId = (typeof STEP_IDS)[number];
+
 interface Settings {
   lang: Lang;
   theme: "light" | "dark";
   showWhy: boolean;
   learned: string[];
+  /** course steps the learner marked as finished */
+  stepsDone: StepId[];
+  /** the learner has been asked, once, which colours their cube has */
+  schemeAsked: boolean;
   /** index of the chosen algorithm for each corner swap of 2-look step 2 */
   perm: { adjacent: number; diagonal: number };
   /** index of the chosen algorithm for orientation groups that offer more than one (2-look step 1) */
@@ -24,7 +32,7 @@ interface Settings {
 
 const KEY = "roux-vn:settings:v1";
 // Vietnamese is the primary language: it is the default whatever the browser says.
-const defaults: Settings = { lang: "vi", theme: "light", showWhy: true, learned: [], perm: { adjacent: 0, diagonal: 0 }, orient: { L: 0, Pi: 0, H: 0 }, top: "yellow", front: "green", lseHand: "easy" };
+const defaults: Settings = { lang: "vi", theme: "light", showWhy: true, learned: [], stepsDone: [], schemeAsked: false, perm: { adjacent: 0, diagonal: 0 }, orient: { L: 0, Pi: 0, H: 0 }, top: "yellow", front: "green", lseHand: "easy" };
 
 // saved data may be stale or hand-edited: keep only fields of the right shape
 function sanitize(v: unknown): Settings {
@@ -37,6 +45,8 @@ function sanitize(v: unknown): Settings {
     theme: o.theme === "dark" || o.theme === "light" ? o.theme : defaults.theme,
     showWhy: typeof o.showWhy === "boolean" ? o.showWhy : defaults.showWhy,
     learned: Array.isArray(o.learned) ? o.learned.filter((x): x is string => typeof x === "string") : [],
+    stepsDone: Array.isArray(o.stepsDone) ? STEP_IDS.filter((id) => (o.stepsDone as unknown[]).includes(id)) : [],
+    schemeAsked: typeof o.schemeAsked === "boolean" ? o.schemeAsked : defaults.schemeAsked,
     perm: {
       adjacent: Number.isInteger((o.perm as any)?.adjacent) && (o.perm as any).adjacent >= 0 ? (o.perm as any).adjacent : 0,
       diagonal: Number.isInteger((o.perm as any)?.diagonal) && (o.perm as any).diagonal >= 0 ? (o.perm as any).diagonal : 0,
@@ -102,6 +112,14 @@ export function toggleLearned(id: string) {
   const has = state.learned.includes(id);
   set({ learned: has ? state.learned.filter((x) => x !== id) : [...state.learned, id] });
 }
+export function markLearned(id: string) {
+  if (!state.learned.includes(id)) set({ learned: [...state.learned, id] });
+}
+export function toggleStepDone(id: StepId) {
+  const has = state.stepsDone.includes(id);
+  set({ stepsDone: STEP_IDS.filter((x) => (x === id ? !has : state.stepsDone.includes(x))) });
+}
+export const markSchemeAsked = () => set({ schemeAsked: true });
 export const getPermPick = (id: "adjacent" | "diagonal") => state.perm[id];
 export const setPermPick = (id: "adjacent" | "diagonal", i: number) => set({ perm: { ...state.perm, [id]: i } });
 export const getOrientPick = (g: OrientChoice) => state.orient[g];

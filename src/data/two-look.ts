@@ -295,6 +295,23 @@ const diagonalOptions = (): PermuteOption[] => [
   },
 ];
 
+/** double turns (R2, U2', F2 ...) in an algorithm */
+export const doubleTurns = (alg: string) => alg.split(" ").filter((t) => t.includes("2")).length;
+const onlyRUF = (alg: string) => alg.split(" ").filter(Boolean).every((t) => "RUF".includes(t[0]));
+
+/**
+ * The default way for step 2: among the options that use only R, U and F, the one with the fewest double turns (ties: the first listed).
+ * The options are listed with this one first, so a learner who never chose gets it (scripts/verify-cmll.ts checks that).
+ */
+export function defaultPermuteIndex(options: PermuteOption[]): number {
+  let best = -1;
+  options.forEach((o, i) => {
+    if (!onlyRUF(o.alg)) return;
+    if (best < 0 || doubleTurns(o.alg) < doubleTurns(options[best].alg)) best = i;
+  });
+  return Math.max(best, 0);
+}
+
 export const PERMUTE_ALGS: PermuteAlg[] = [
   {
     id: "adjacent",

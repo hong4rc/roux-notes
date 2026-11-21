@@ -166,6 +166,20 @@ export function SolvePage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fromUrl]);
+  // an empty page teaches nothing, so a first visit opens with a random scramble already solved
+  useEffect(() => {
+    if (fromUrl) return;
+    let cancelled = false;
+    void wcaScramble().then((s) => {
+      if (cancelled || lastRun.current) return;
+      setText(s);
+      run(s);
+    });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   // changing a level solves the same scramble again
   useEffect(() => {
     if (lastRun.current) run(lastRun.current);
@@ -182,8 +196,8 @@ export function SolvePage() {
       <PageHead
         title={tr("Giải scramble này", "Solve this scramble")}
         lead={tr(
-          "Dán một scramble vào ô dưới. Máy sẽ chỉ bạn giải nó theo Roux, từng bước một, và nói rõ mỗi bước dùng công thức nào.",
-          "Paste a scramble in the box below. The computer shows you how to solve it with Roux, one step at a time, and says which algorithm each step uses.",
+          "Trang mở sẵn với một scramble ngẫu nhiên; bạn có thể dán scramble của mình vào ô dưới. Máy sẽ chỉ cách giải theo Roux, từng bước một, và nói rõ mỗi bước dùng công thức nào. Đây là cách xem một lời giải mẫu, không phải đáp án bạn phải chép.",
+          "The page opens with a random scramble; you can paste your own in the box below. The computer shows how to solve it with Roux, one step at a time, and says which algorithm each step uses. It is a worked example to learn from, not an answer you must copy.",
         )}
       />
       <div className="card">
@@ -311,8 +325,8 @@ export function SolvePage() {
           )}
           <p className="small muted">
             {tr(
-              "Nước U in nhạt là nước xoay mặt trên cho khớp hình (AUF). Nó vẫn là một nước, nên vẫn được đếm.",
-              "A faded U is a turn of the top layer to line things up (AUF). It is still a move, so it is still counted.",
+              "Nước U in nhạt là nước xoay mặt trên cho khớp hình (tiếng Anh gọi là AUF, “adjust U face”). Nó vẫn là một nước, nên vẫn được đếm.",
+              "A faded U is a turn of the top layer to line things up (called AUF, “adjust U face”). It is still a move, so it is still counted.",
             )}
           </p>
 
@@ -420,6 +434,17 @@ function StepCard({ step, n, level }: { step: Step; n: number; level?: { value: 
         {n}. {info.title()} <span className="tag">{tr(`${step.moves} nước`, `${step.moves} moves`)}</span>
       </h3>
       <p>{info.what()}</p>
+      {(step.id === "fb" || step.id === "sb") && (
+        <p className="small" style={{ background: "var(--hi)", padding: "6px 10px", borderRadius: 8 }}>
+          {tr(
+            "Máy tìm đường ngắn nhất cho khối này, nên có thể dùng nước bạn ít gặp. Bạn không cần làm giống máy: chỉ cần khối xong.",
+            "The computer finds the shortest way for this block, so it may use moves you rarely meet. You do not have to match it: you only need a finished block.",
+          )}{" "}
+          <a href={href(step.id === "fb" ? "/learn/first-block" : "/learn/second-block")}>
+            {step.id === "fb" ? tr("Cách tự dựng khối đầu →", "How to build the first block yourself →") : tr("Cách tự dựng khối thứ hai →", "How to build the second block yourself →")}
+          </a>
+        </p>
+      )}
       {level && (step.id === "cmll" || step.id === "lse") && <LevelSwitch step={step.id} value={level.value} set={level.set} />}
       <div className="step-body">
         <MovePlayer start={step.before} moves={moves} aligning={aligning} fingers={fingers} width={210} turn={28} />

@@ -5,11 +5,29 @@ import { CMLL_CASES } from "../data/cmll";
 import { tr } from "../lib/i18n";
 import { Icon } from "../components/icons";
 import { href } from "../lib/router";
-import { useSettings } from "../lib/store";
+import { toggleStepDone, useSettings, type StepId } from "../lib/store";
+
+interface CourseStep {
+  id: StepId;
+  to: string;
+  title: string;
+  text: string;
+}
+
+const steps = (): CourseStep[] => [
+  { id: "first-block", to: "/learn/first-block", title: tr("Bước 1: Khối đầu", "Step 1: First block"), text: tr("Dựng khối 1×2×3 bên trái bằng mắt, không cần thuật toán.", "Build the 1×2×3 block on the left by eye, no algorithm needed.") },
+  { id: "second-block", to: "/learn/second-block", title: tr("Bước 2: Khối thứ hai", "Step 2: Second block"), text: tr("Dựng khối 1×2×3 bên phải mà không phá khối trái.", "Build the 1×2×3 block on the right without breaking the left one.") },
+  { id: "cmll-2-look", to: "/cmll/2-look", title: tr("Bước 3: CMLL 2-look", "Step 3: CMLL 2-look"), text: tr("Giải bốn góc tầng trên bằng hai lượt, chín thuật toán.", "Solve the four top corners in two looks with nine algorithms.") },
+  { id: "lse", to: "/lse", title: tr("Bước 4: LSE", "Step 4: LSE"), text: tr("Giải sáu cạnh cuối chỉ bằng nước M và U.", "Solve the last six edges with only M and U moves.") },
+];
 
 export function HomePage() {
-  const { learned } = useSettings();
+  const { learned, stepsDone } = useSettings();
   const known = CMLL_CASES.filter((c) => learned.includes(c.id)).length;
+  const list = steps();
+  const next = list.find((st) => !stepsDone.includes(st.id));
+  const started = stepsDone.length > 0;
+  const startLabel = (st: CourseStep) => `${started ? tr("Tiếp tục", "Continue") : tr("Bắt đầu", "Start")}: ${st.title}`;
   // the state after the second block: both blocks and the centres are right; the top corners and the M slice are not
   const demo = applyAlg(applyAlg(solvedState(), invertAlg("R U R' U R U2 R'")), "U M' U M");
   return (
@@ -37,8 +55,8 @@ export function HomePage() {
             )}
           </p>
           <div className="bar" style={{ marginTop: 18 }}>
-            <a className="btn accent" href={href("/learn")}>
-              {tr("Học từ đầu", "Start learning")}
+            <a className="btn accent" href={href(next ? next.to : "/cmll/all")}>
+              {next ? startLabel(next) : tr("Học tiếp: đủ 42 case CMLL", "Keep learning: all 42 CMLL cases")}
             </a>
             <a className="btn" href={href("/finder")}>
               <Icon name="search" /> {tr("Tìm case của tôi", "Find my case")}
@@ -53,56 +71,88 @@ export function HomePage() {
         </Fig>
       </section>
 
-      <h2>{tr("Có gì ở đây", "What is here")}</h2>
-      <div className="grid cols-3">
-        <a className="card" href={href("/learn")}>
-          <h3 style={{ marginTop: 0 }}><Icon name="blocks" className="ico-card" /> {tr("Học từng bước", "Learn step by step")}</h3>
-          <p style={{ margin: 0 }}>{tr("Khối đầu, khối thứ hai, CMLL, LSE: hình minh họa, lý do và lỗi hay gặp.", "First block, second block, CMLL, LSE: pictures, reasons and common mistakes.")}</p>
-        </a>
-        <a className="card" href={href("/cmll")}>
-          <h3 style={{ marginTop: 0 }}><Icon name="puzzle" className="ico-card" /> {tr("CMLL: 2-look và đủ 42 case", "CMLL: 2-look and all 42 cases")}</h3>
-          <p style={{ margin: 0 }}>{tr("So sánh hai cách, mỗi case có hai thuật toán, từng bước và lý do.", "Compare the two ways; every case has two algorithms, the steps and the reasons.")}</p>
-        </a>
-        <a className="card" href={href("/lse")}>
-          <h3 style={{ marginTop: 0 }}><Icon name="dial" className="ico-card" /> {tr("LSE: sáu cạnh cuối", "LSE: the last six edges")}</h3>
-          <p style={{ margin: 0 }}>{tr("EO, UL/UR và 4c: tra thuật toán ngắn nhất theo đúng cấu hình của bạn.", "EO, UL/UR and 4c: look up the shortest algorithm for your exact configuration.")}</p>
-        </a>
-        <a className="card" href={href("/finder")}>
-          <h3 style={{ marginTop: 0 }}><Icon name="search" className="ico-card" /> {tr("Tìm case", "Find your case")}</h3>
-          <p style={{ margin: 0 }}>{tr("Chạm vào sticker trên hình, chọn đèn pha, thấy ngay thuật toán.", "Tap the stickers on the picture, choose the headlights, and see the algorithm at once.")}</p>
-        </a>
-        <a className="card" href={href("/about")}>
-          <h3 style={{ marginTop: 0 }}><Icon name="scroll" className="ico-card" /> {tr("Ai tạo ra Roux?", "Who created Roux?")}</h3>
-          <p style={{ margin: 0 }}>{tr("Lịch sử, so với CFOP, điểm mạnh và điểm yếu, ai đang dùng.", "History, comparison with CFOP, strengths and weaknesses, and who uses it.")}</p>
-        </a>
-        <a className="card" href={href("/practice")}>
-          <h3 style={{ marginTop: 0 }}><Icon name="dice" className="ico-card" /> {tr("Luyện tập", "Practice")}</h3>
-          <p style={{ margin: 0 }}>{tr("Scramble ngẫu nhiên cho từng bước, có hình cube sau khi xáo.", "Random scrambles for each step, with a picture of the cube after the scramble.")}</p>
-        </a>
-        <a className="card" href={href("/solve")}>
-          <h3 style={{ marginTop: 0 }}><Icon name="list" className="ico-card" /> {tr("Giải scramble này", "Solve a scramble")}</h3>
-          <p style={{ margin: 0 }}>{tr("Dán một scramble, xem từng bước khối đầu, khối hai, CMLL và LSE.", "Paste a scramble and see each step: first block, second block, CMLL and LSE.")}</p>
-        </a>
-        <a className="card" href={href("/glossary")}>
-          <h3 style={{ marginTop: 0 }}><Icon name="book" className="ico-card" /> {tr("Ký hiệu và thuật ngữ", "Notation and glossary")}</h3>
-          <p style={{ margin: 0 }}>{tr("Cách đọc R U R', và các từ như AUF, EO, đèn pha.", "How to read R U R', and words such as AUF, EO and headlights.")}</p>
-        </a>
+      <h2>{tr("Lộ trình bốn bước", "The four-step course")}</h2>
+      <p>
+        {tr(
+          <>
+            Làm lần lượt từ trên xuống. Trước khi bắt đầu, đọc <a href={href("/glossary")}>Chuẩn bị: Ký hiệu</a> (khoảng hai phút) để hiểu các chữ như R, U, M. Xong mỗi bước, tick “Đã xong” để trang nhớ bạn đang ở đâu.
+          </>,
+          <>
+            Go from top to bottom. Before you start, read <a href={href("/glossary")}>Preparation: Notation</a> (about two minutes) so letters such as R, U and M make sense. After each step, tick “Done” so the site remembers where you are.
+          </>,
+        )}
+      </p>
+      <div className="course-strip">
+        {list.map((st) => {
+          const done = stepsDone.includes(st.id);
+          const current = next?.id === st.id;
+          return (
+            <div key={st.id} className={`card course-step ${current ? "current" : ""} ${done ? "done" : ""}`}>
+              <h3>
+                <a href={href(st.to)}>{st.title}</a>
+              </h3>
+              <p className="small">{st.text}</p>
+              <div className="course-step-foot">
+                <a className={`btn small ${current ? "accent" : ""}`} href={href(st.to)}>
+                  {current ? (started ? tr("Tiếp tục", "Continue") : tr("Bắt đầu", "Start")) : done ? tr("Xem lại", "Review") : tr("Mở", "Open")}
+                </a>
+                <label className="check-label">
+                  <input type="checkbox" checked={done} onChange={() => toggleStepDone(st.id)} /> {tr("Đã xong", "Done")}
+                </label>
+              </div>
+            </div>
+          );
+        })}
       </div>
+      <p className="small muted">
+        {tr(
+          <>
+            Sau bốn bước là hai phần nâng cao: <a href={href("/cmll/all")}>Nâng cao A, đủ 42 case CMLL</a> và <a href={href("/learn/advanced")}>Nâng cao B, tối ưu</a>.
+          </>,
+          <>
+            After the four steps come two advanced parts: <a href={href("/cmll/all")}>Advanced A, all 42 CMLL cases</a> and <a href={href("/learn/advanced")}>Advanced B, optimization</a>.
+          </>,
+        )}
+      </p>
 
       <h2>{tr("Tiến độ của bạn", "Your progress")}</h2>
       <div className="card" style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
         <p style={{ margin: 0 }}>
           {tr(
             <>
-              Đã thuộc <strong>{known}/42</strong> case CMLL. Dữ liệu này lưu ngay trong trình duyệt của bạn.
+              Đã xong <strong>{stepsDone.length}/4</strong> bước. Đã thuộc <strong>{known}/42</strong> case CMLL. Dữ liệu này lưu ngay trong trình duyệt của bạn.
             </>,
             <>
-              Learned <strong>{known}/42</strong> CMLL cases. This data is saved right in your browser.
+              Finished <strong>{stepsDone.length}/4</strong> steps. Learned <strong>{known}/42</strong> CMLL cases. This data is saved right in your browser.
             </>,
           )}
         </p>
-        <a className="btn" href={href(known >= CMLL_CASES.length ? "/practice" : "/cmll/all")}>
-          {known >= CMLL_CASES.length ? tr("Luyện tập →", "Practice →") : tr("Học tiếp: thư viện 42 case →", "Keep learning: the 42-case library →")}
+        <a className="btn" href={href(next ? next.to : known >= CMLL_CASES.length ? "/practice" : "/cmll/all")}>
+          {next
+            ? tr(`Học tiếp: ${next.title} →`, `Keep learning: ${next.title} →`)
+            : known >= CMLL_CASES.length
+              ? tr("Luyện tập →", "Practice →")
+              : tr("Học tiếp: Nâng cao A, đủ 42 case CMLL →", "Keep learning: Advanced A, all 42 CMLL cases →")}
+        </a>
+      </div>
+
+      <h2>{tr("Công cụ", "Tools")}</h2>
+      <div className="grid cols-4 tools-row">
+        <a className="card soft" href={href("/practice")}>
+          <h3 style={{ marginTop: 0 }}><Icon name="dice" className="ico-card" /> {tr("Luyện tập", "Practice")}</h3>
+          <p className="small" style={{ margin: 0 }}>{tr("Scramble ngẫu nhiên cho từng bước, có hình cube sau khi xáo.", "Random scrambles for each step, with a picture of the cube after the scramble.")}</p>
+        </a>
+        <a className="card soft" href={href("/solve")}>
+          <h3 style={{ marginTop: 0 }}><Icon name="list" className="ico-card" /> {tr("Giải scramble này", "Solve a scramble")}</h3>
+          <p className="small" style={{ margin: 0 }}>{tr("Dán một scramble, xem từng bước khối đầu, khối hai, CMLL và LSE.", "Paste a scramble and see each step: first block, second block, CMLL and LSE.")}</p>
+        </a>
+        <a className="card soft" href={href("/glossary")}>
+          <h3 style={{ marginTop: 0 }}><Icon name="book" className="ico-card" /> {tr("Ký hiệu và thuật ngữ", "Notation and glossary")}</h3>
+          <p className="small" style={{ margin: 0 }}>{tr("Cách đọc R U R', và các từ như AUF, EO, đèn pha, được giải thích bằng lời thường.", "How to read R U R', and words such as AUF, EO and headlights, explained in plain words.")}</p>
+        </a>
+        <a className="card soft" href={href("/about")}>
+          <h3 style={{ marginTop: 0 }}><Icon name="scroll" className="ico-card" /> {tr("Roux là gì?", "What is Roux?")}</h3>
+          <p className="small" style={{ margin: 0 }}>{tr("Ai tạo ra Roux, so với CFOP, điểm mạnh và điểm yếu.", "Who created Roux, how it compares with CFOP, strengths and weaknesses.")}</p>
         </a>
       </div>
     </>

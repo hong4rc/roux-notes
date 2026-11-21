@@ -67,3 +67,13 @@ export function Toc({ items }: { items: TocItem[] }) {
     </nav>
   );
 }
+
+/** A page with the table of contents beside it (above it on narrow screens). */
+export function WithToc({ items, children }: { items: TocItem[]; children: React.ReactNode }) {
+  return (
+    <div className="with-toc">
+      <Toc items={items} />
+      <div>{children}</div>
+    </div>
+  );
+}

@@ -311,6 +311,22 @@ const diagonalOptions = (): PermuteOption[] => [
       "Learn it as one piece: R U' L U2 R' U L'. Do the piece, do exactly the same piece once more, then U.",
     ),
   },
+  {
+    alg: "L' U2 L U2 r U' L' U R' U R U' L U r'",
+    title: tr("Tham khảo: 15 nước, có r", "For reference: 15 moves, with r"),
+    pros: [
+      tr("Có r (là R kèm M', nước M' dễ xoáy) mở và đóng đoạn giữa.", "Uses r (R together with M', and M' is an easy flick) to open and close the middle part."),
+      tr("Không có nước F; chỉ một kiểu xoay đôi (U2).", "No F turns; only one kind of double turn (U2)."),
+    ],
+    cons: [
+      tr("Không có đoạn lặp, khó nhớ hơn cách làm hai lần một mẩu.", "No repeated part, harder to remember than the one that does one piece twice."),
+      tr("L chạm vào khối trái (được trả lại ở cuối); r kéo cả lát giữa đi rồi trả lại ở cuối.", "L touches the left block (it comes back at the end); r also moves the middle slice and returns it at the end."),
+    ],
+    memo: tr(
+      "Học thành hai mẩu: L' U2 L U2 · r U' L' U R' U R U' L U r'. Mẩu sau là đoạn chín nước kẹp giữa r và r': bắt đầu bằng r, kết thúc bằng r'.",
+      "Learn it as two pieces: L' U2 L U2 · r U' L' U R' U R U' L U r'. The second piece is a nine-move part wrapped between r and r': it starts with r and ends with r'.",
+    ),
+  },
 ];
 
 /** double turns (R2, U2', F2 ...) in an algorithm */
